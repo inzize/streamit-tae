@@ -585,7 +585,7 @@ public class TaePartitionerILP_NotFission {
             */
 
             
-            /*
+            
             System.out.println("***** To do partitioning here... *****");
             System.out.println();
 
@@ -726,7 +726,7 @@ public class TaePartitionerILP_NotFission {
             }
             System.out.println("*************************************");
             System.out.println();
-            */
+            
 
             // Dispose of model and environment
             model.dispose();
