@@ -1,0 +1,245 @@
+####
+# Build StreamIT2 and testcases
+####
+
+####User settings
+## can be overriden on make call, eg. "make STREAMIT_FLAGS=-1x2x3"
+
+## build dir for generated code and compilation is optional
+TC_STR_DIR=tests
+
+## default flags -> see StreamIt help
+STREAMIT_FLAGS=-xml=config/mpsoc_1x1x4.xml -part=taeILP:sim -savepart -merge -maxmult=1 -resa=2 -satimeout=60 --memlayout=local
+
+## don't run following programs, known bad programs are "FilterBankNewInt.str H264.str"
+BLACKLIST = H264.str
+
+## only run following programs, possible list for example: 
+## testcase whitelist BitonicSort.str BitonicSortRecursive.str ComparisonCounting.str DES.str MatrixMultInt.str BatcherSort.str InsertionSort.str MergeSort.str RadixSort.str BubbleSort.str VectAdd.str Sender80211.str
+
+##WHITELIST = BatcherSort.str BubbleSort.str Sender80211.str
+
+WHITELIST = Sender80211.str
+
+## enable tracing support
+COREVA_CPPFLAGS += -DCOREVA_TRACE
+
+## path to old MIT-StreamIt
+STREAMIT_OLD=../toolchain/compiler/streamit
+
+#### User settings end
+
+
+#### Declare default programs
+#run in current directory
+ROOT_PATH?=.
+SHELL := /bin/bash
+TIMEOUT=$(ROOT_PATH)/tools/coreutils-8.21/bin/timeout
+ANT_BIN=./tools/apache-ant-1.9.3/bin/ant
+#### Declare Variables
+# use streamit flags as unique id -> this has to be in sync to the script git
+export STREAMIT_FLAGS_ID=$(shell echo '${STREAMIT_FLAGS}' | sed 's/[^a-zA-Z0-9]//g' | sed 's/loadpart.*//g' | sed 's/loadpart//g' | sed 's/xmlpart//g' | sed 's/xml//g' | sed 's/configmpsoc/cfg/g' | sed 's/createmergesplitfile//g')
+ifeq ($(STREAMIT_FLAGS_ID),)
+STREAMIT_FLAGS_ID:=default
+endif
+# set directory for generated and compiled files
+ifeq ($(STR_BUILD_DIR),)
+TC_BUILD_DIR = $(TC_STR_DIR)/generated_src/
+else
+TC_BUILD_DIR = $(STR_BUILD_DIR)$(STREAMIT_FLAGS_ID)/
+MORE_FLAGS += --output-dir=$(TC_BUILD_DIR)
+endif
+# place streamit tracefile in subfolder of generated sources
+MORE_FLAGS += --create-timeline=$(TC_BUILD_DIR)/$(notdir $(@D))/sim/trace/
+TC_ALL=$(shell ls -d $(TC_STR_DIR)/*.str)
+BLACKLIST := $(addprefix $(TC_STR_DIR)/, $(BLACKLIST))
+# If WHITELIST is empty, set it to list of all test cases (TC_ALL)
+WHITELIST := $(addprefix $(TC_STR_DIR)/, $(WHITELIST))
+ifeq ($(WHITELIST),)
+	WHITELIST:=$(TC_ALL)
+endif
+# Filter out BLACKLIST, keep WHITELIST
+TC_STR:=$(filter $(addprefix %,$(WHITELIST)), $(filter-out $(BLACKLIST), $(TC_ALL)))
+# create pseudo result, deleted later
+TC_DIR=$(addprefix $(TC_BUILD_DIR),$(basename $(notdir $(TC_STR))))
+TC_GEN=$(addsuffix /.tc_gen, $(TC_DIR))
+TC_SEQ=$(addsuffix /c/.tc_seq, $(TC_DIR))
+TC_TEST=$(addsuffix /.test, $(TC_DIR))
+TC_PERF=$(TC_STR:%.str=%.perf)
+
+#### Targets
+.PHONY: all
+all: streamit_build tc_gen
+
+.PHONY: clean
+clean: tc_clean
+
+.PHONY: mrproper
+mrproper: streamit_clean clean
+	@rm -rf log/*.log*
+
+#### StreamIt MIT
+.PHONY: streamit_old_build
+streamit_old_build: 
+	$(MAKE) -C $(STREAMIT_OLD)
+
+.PHONY: streamit_old_clean
+streamit_old_clean:
+	$(MAKE) -C $(STREAMIT_OLD) clean
+
+#### StreamIt
+.PHONY: streamit_build
+streamit_build: dist/StreamIT2.jar
+
+dist/StreamIT2.jar:
+	@$(ANT_BIN) -f build.xml jar > build.log
+
+.PHONY: streamit_clean
+streamit_clean:
+	@$(ANT_BIN) -quiet -f build.xml clean > /dev/null
+	
+#### Testcases
+.PHONY: tc_clean
+tc_clean:
+	@rm -rf $(TC_BUILD_DIR)
+
+# generate code for all testcases
+.PHONY: tc_gen
+tc_gen: $(TC_GEN)
+
+INPUT_FILE = $(abspath $(dir $<)/..)/tests/data/$(notdir $(@D))_input.stream
+
+%/.tc_gen: dist/StreamIT2.jar
+	$(dir_guard)
+	@java -ea -Xmx2048m -cp "javaLibs/*:dist/StreamIT2.jar" \
+	streamit2.Main $(STREAMIT_FLAGS) $(MORE_FLAGS) $(addprefix $(TC_STR_DIR)/,$(notdir $(@D)).str)
+	@test -s $(INPUT_FILE) && { \
+	echo "INPUT FILE LINKED"; \
+	cp -s $(INPUT_FILE) $(abspath $(dir $@))/input.stream ; \
+	} || { true; }
+	@touch $@
+
+# generate code for all testcases with old StreamIt compiler
+.PHONY: tc_gen_old
+tc_gen_old: $(TC_GEN)
+
+%/.tc_gen_old: streamit_old_build
+	java -Xmx2048m -ea -classpath $(STREAMIT_OLD)/bin/streamit.jar streamit.frontend.ToJava --library --output $(subst generated_src_old/,,$(@D)).str
+	@touch $@
+
+# build dependencies
+.PHONY: rebuild_deps
+rebuild_deps: clean_deps build_deps
+
+.PHONY: build_deps
+build_deps:
+	@echo -n "Building dependencies in \"$(COREVA_SOFTWARE)\"... "
+	@$(MAKE) -s -C $(COREVA_SOFTWARE) -f makebase_streamit.mk build_deps &>/dev/null && echo "successful!" || echo "failed! Please run 'make -f makebase_streamit.mk build_deps' in your software git for more details"
+	
+.PHONY: clean_deps
+clean_deps:
+	@$(MAKE) -s -C $(COREVA_SOFTWARE) -f makebase_streamit.mk clean_deps
+	
+# build sequential code
+.PHONY: build_seq
+build_seq: tc_gen $(TC_SEQ)
+
+$(TC_BUILD_DIR)%/.tc_seq:
+	@$(MAKE) --no-print-directory -C $(dir $(@D)) build_seq
+	@touch $@
+
+# simulate first testcase in list
+.PHONY: run_coreva
+run_coreva:
+	@$(MAKE) -s tc_gen &> /dev/null
+	@$(MAKE) --no-print-directory -C $(firstword $(TC_DIR)) run_coreva
+	
+#### Tests ####
+.PHONY: show_last_test
+show_last_test: 
+	@echo "Quit with q"
+	@less -r test.tmp
+
+.PHONY: test
+test: build_deps test_headline test_summary
+
+.PHONY: test_headline
+test_headline: build_deps tc_gen
+#remove last result
+	@rm -f test.tmp 
+	@echo -e "\n$(TC_STR_DIR): ($(STREAMIT_FLAGS))" | tee -a test.tmp
+	@$(MAKE) --no-print-directory -f $(COREVA_SOFTWARE)/makebase_streamit.mk test_headline | tee -a test.tmp
+
+$(TC_BUILD_DIR)%/.test: build_deps tc_gen test_headline
+	@$(MAKE) --no-print-directory -C $(dir $@) run_test | tee -a test.tmp
+
+COUNT=`cut -d'|' -f$(1) test.tmp  2> /dev/null | grep -c '$(2)'`
+test_summary: build_deps tc_gen test_headline $(TC_TEST)
+	@echo   "                       | s-p | p-c | s-c |" | tee -a test.tmp
+	@printf "Tests successful       | %3s | %3s | %3s |\n" "$(call COUNT,9,+)" "$(call COUNT,10,+)" "$(call COUNT,11,+)" | tee -a test.tmp
+	@echo
+
+UNK=$$(tput setaf 3)\#$$(tput sgr0)
+output_format = "%-26s |  $(UNK)  |  $(UNK)  |  $(UNK)  |  $(UNK)  |  $(UNK)  |  $(UNK)  |  $(UNK)  |  $(UNK)  |  $(UNK)  |  $(UNK)  | %-8s | %-50s\n"
+
+#### generate code; build, run and compare the outputs of all variants
+.PHONY: run_test
+run_test:
+	@$(MAKE) -s tc_gen &> /dev/null
+#	if code generation failed, print yellow #s
+	@$(MAKE) --no-print-directory -C $(firstword $(TC_DIR)) run_test 2>/dev/null || \
+	if [ -n "$(firstword $(TC_DIR))" ]; then printf $(output_format) "$(notdir $(firstword $(TC_DIR)))" $(shell hostname) $(STREAMIT_FLAGS_ID); \
+	else printf $(output_format) "$(notdir $(WHITELIST))" $(shell hostname) $(STREAMIT_FLAGS_ID); fi
+
+.PHONY: reg_test
+reg_test: mrproper
+	@rm -f reg_test.log
+	@time nice ./reg_test.py | tee reg_test.log ; cat reg_test.log | grep "-" | sed "s,\x1B[\[(][0-9;]*[a-zA-Z],,g" | mail -s "reg_test finished on $$(hostname)" $$USER@techfak.uni-bielefeld.de
+
+#### filter performance estimation
+.PHONY: _perf
+_perf: clean
+	@$(MAKE) --no-print-directory STREAMIT_FLAGS="--iterMult -maxmult=10 --max-mem=0.75 -xml=config/mpsoc_1x1x1.xml -part=greedy:ast -merge" MORE_FLAGS="" tc_gen > /dev/null
+
+.PHONY: perf
+perf: $(TC_PERF) _perf
+
+%.perf: _perf
+	@echo $@
+	$(eval INPUT_FILE = $(abspath $(dir $<))/tests/data/$(basename $(notdir $@))_input.stream)
+	@for i in $(dir $@)generated_src/$(basename $(notdir $@))_*; do \
+	pushd $$i; \
+	test -s $(INPUT_FILE) && { echo "INPUT FILE LINKED"; cp -s $(INPUT_FILE) $(abspath $$i)/input.stream ; } || { true; }; \
+	$(MAKE) -s build_coreva && \
+	$(MAKE) -s run_coreva && \
+	popd ; \
+	done
+	cd $(dir $@)generated_src/ && $(shell pwd)/tools/perf/perf.py $(basename $(notdir $@)) > ../$(basename $(notdir $@)).perf
+
+# create directory if needed, @D is directory of current file
+dir_guard=@mkdir -p $(@D)
+
+#### HelP
+.PHONY: help
+help:
+	@echo -e "Cleaning targets:"
+	@echo -e "  clean\t\t\t- Remove all generated files but keep the streamit build and root csv files"
+	@echo -e "  mrproper\t\t- Remove all generated files (benchmark with csv files, testcases, steamit)"
+	@echo -e "  tc_clean\t\t- Remove generated testcases"
+	@echo -e "  streamit_clean\t- Remove generated streamit files"
+	@echo
+	@echo -e "Generic targets:"
+	@echo -e "  all\t\t\t- Build all targets marked with [*]"
+	@echo -e " *streamit_build\t- Build streamit_jar"
+	@echo -e " *tc_gen\t\t- Build code for all testcases (run streamit.jar over .str files)"
+	@echo -e "  build_seq\t\t- Build sequential code"
+	@echo -e "  show_last_test\t- Shows the last rest results"
+	@echo -e "  test\t\t\t- Run all testcases in TC_STR_DIR (compare seq with sim output)"
+	@echo -e "      \t\t\t    Note: {+ : ok}, {- : fail}, {0 : no output}, {# : test not reached}"
+	@echo
+	@echo -e "make WHITELIST       = \".str .str .str\"  [TARGET]          Use whitelist for a target"
+	@echo -e "make BLACKLIST       = \".str .str .str\"  [TARGET]          Use blacklist for a target"
+	@echo -e "make STREAMIT_FLAGS  = \"[flags]\"         [TARGET]          Use special streamit flags for target (you might need a manual clean)"	
+	@echo -e "make TC_STR_DIR      = \"[folder]\"        [TARGET]          Use special streamit source folder"
+	@echo -e "make default_timeout = \"[num]\"           [test]            Use special default timeout (kill after [num]s)"
+	@echo -e "make test_lines      = \"[num]\"           [test]            Compare only [num] lines of output (default: 20)"

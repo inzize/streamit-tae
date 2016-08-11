@@ -1,0 +1,6 @@
+title=
+speedup=1
+configmpsoc1x1x1sasim: 1 core
+configmpsoc1x1x2sasim: 2 cores
+configmpsoc1x1x4sasim: 4 cores
+test: 8

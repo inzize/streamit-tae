@@ -1,0 +1,36 @@
+void->void pipeline simple
+{
+    add input;
+    add foo;
+    add output;
+}
+
+void -> int filter input
+{
+    work push 1
+    {
+        push(42);
+    }
+}
+
+int -> void filter output
+{
+    work pop 1
+    {
+        pop();
+    }
+}
+
+int -> int filter foo
+{
+    work pop 1 push 1
+    {
+        int x = pop();
+        for (int i=0; i<1000; i++)
+            if (i % 2 == 0)
+                x *= x;
+            else
+                x /= i;
+        push(x);
+    }
+}

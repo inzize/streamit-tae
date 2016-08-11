@@ -1,0 +1,15 @@
+pipeline
+  filter 0 FileReader
+  pipeline
+    filter 1 Sort
+    filter 2 Sort
+    filter 3 Sort
+    filter 4 Sort
+    filter 5 Sort
+    filter 6 Sort
+    filter 7 Sort
+    filter 8 Sort
+    filter 9 Sort
+    filter 10 Sort
+    filter 11 Sort
+  filter 12 FileWriter

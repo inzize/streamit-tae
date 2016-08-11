@@ -1,0 +1,102 @@
+02:48:57 INFO    Compile :: /home/coreva/coreva_dev/streamit/tests/DES.str
+02:48:57 INFO    Compile :: Arguments: [-xml=config/mpsoc_1x1x4.xml, -part=taeILP:sim, -savepart, -merge, -maxmult=1, -resa=2, -satimeout=60, --memlayout=local, --create-timeline=tests/generated_src//DES/sim/trace/, tests/DES.str]
+02:49:25 INFO    Partition :: part_time: 22,780 [ms]
+02:49:25 INFO    Partition :: estimated throughput: 2,801.693 [OutputItems/MCycles]
+02:49:25 INFO    Partition :: bottleneck: cpu_0_0_1 (Xor_1:16468, Xor_5:14194, Identity_2:6845, Identity_4:5948, doP_2:5399, doP_3:5169, anonFilter3_4:3093, doE_3_2:2221, Identity_8:2043, Identity_5:1983, FileReader_0:1152, Sbox_15:819, Sbox_14:819, Sbox_26:455, Sbox_7:407, Sbox_23:380, Sbox_19:380, Sbox_24:368, Sbox_18:368, anonFilter0_2:19)
+02:49:32 INFO    Partition :: evaluator_time Old: 1341774 [ns]
+02:49:32 INFO    Partition :: filter_cnt: 82
+02:49:32 INFO    Partition :: global_mult: 12
+02:49:32 INFO    Partition :: root_mult: 1
+02:49:32 INFO    isFirstFilterInGraph :: Graph may contain multiple void->!void filters!
+02:49:32 INFO    printMemStat :: mem_usage: 
+			cpu_0_0_0: 41020 byte (4.0058594%)
+			cpu_0_0_1: 44184 byte (4.3148437%)
+			cpu_0_0_2: 30532 byte (2.9816406%)
+			cpu_0_0_3: 35960 byte (3.5117188%)
+02:49:33 INFO    printCommStat :: steady state: 68,530 cycle
+02:49:33 INFO    printCommStat :: output_rate: 0.0897 bit/cycle
+02:49:33 INFO    printCommStat :: link_communication:
+			( 0, 0) LNK_BUS     : 18468 byte, 2.1559 bit/cycle
+02:49:33 INFO    printCommStat :: filter_communication:
+			FileReader_0        : in:     0 byte, out:  3072 byte
+			doIP_1_1            : in:   384 byte, out:   768 byte
+			doIP_1_2            : in:   384 byte, out:   768 byte
+			doE_1               : in:   384 byte, out:   576 byte
+			anonFilter3_1       : in:     0 byte, out:   576 byte
+			Xor_1               : in:  1152 byte, out:   576 byte
+			Sbox_1_1            : in:    36 byte, out:    24 byte
+			Sbox_1_2            : in:    36 byte, out:    24 byte
+			Sbox_2_1            : in:    24 byte, out:    16 byte
+			Sbox_2_2            : in:    24 byte, out:    16 byte
+			Sbox_2_3            : in:    24 byte, out:    16 byte
+			Sbox_3              : in:    72 byte, out:    48 byte
+			Sbox_4              : in:    72 byte, out:    48 byte
+			Sbox_5              : in:    72 byte, out:    48 byte
+			Sbox_6              : in:    72 byte, out:    48 byte
+			Sbox_7              : in:    72 byte, out:    48 byte
+			Sbox_8              : in:    72 byte, out:    48 byte
+			doP_1               : in:   384 byte, out:   384 byte
+			Identity_1          : in:   384 byte, out:   384 byte
+			Xor_2               : in:   768 byte, out:   768 byte
+			Identity_2          : in:   384 byte, out:   768 byte
+			anonFilter0_1       : in:   384 byte, out:     0 byte
+			doE_2               : in:   384 byte, out:   576 byte
+			anonFilter3_2       : in:     0 byte, out:   576 byte
+			Xor_3_1             : in:   384 byte, out:   192 byte
+			Xor_3_2             : in:   384 byte, out:   192 byte
+			Xor_3_3             : in:   384 byte, out:   192 byte
+			Sbox_9              : in:    72 byte, out:    48 byte
+			Sbox_10             : in:    72 byte, out:    48 byte
+			Sbox_11             : in:    72 byte, out:    48 byte
+			Sbox_12_1           : in:    18 byte, out:    12 byte
+			Sbox_12_2           : in:    18 byte, out:    12 byte
+			Sbox_12_3           : in:    18 byte, out:    12 byte
+			Sbox_12_4           : in:    18 byte, out:    12 byte
+			Sbox_13             : in:    72 byte, out:    48 byte
+			Sbox_14             : in:    72 byte, out:    48 byte
+			Sbox_15             : in:    72 byte, out:    48 byte
+			Sbox_16             : in:    72 byte, out:    48 byte
+			doP_2               : in:   384 byte, out:   384 byte
+			Identity_3          : in:   384 byte, out:   384 byte
+			Xor_4               : in:   768 byte, out:   768 byte
+			Identity_4          : in:   384 byte, out:   768 byte
+			anonFilter0_2       : in:   384 byte, out:     0 byte
+			doE_3_1             : in:   192 byte, out:   288 byte
+			doE_3_2             : in:   192 byte, out:   288 byte
+			anonFilter3_3       : in:     0 byte, out:   576 byte
+			Xor_5               : in:  1152 byte, out:   576 byte
+			Sbox_17             : in:    72 byte, out:    48 byte
+			Sbox_18             : in:    72 byte, out:    48 byte
+			Sbox_19             : in:    72 byte, out:    48 byte
+			Sbox_20             : in:    72 byte, out:    48 byte
+			Sbox_21             : in:    72 byte, out:    48 byte
+			Sbox_22             : in:    72 byte, out:    48 byte
+			Sbox_23             : in:    72 byte, out:    48 byte
+			Sbox_24             : in:    72 byte, out:    48 byte
+			doP_3               : in:   384 byte, out:   384 byte
+			Identity_5          : in:   384 byte, out:   384 byte
+			Xor_6               : in:   768 byte, out:   768 byte
+			Identity_6          : in:   384 byte, out:   768 byte
+			anonFilter0_3       : in:   384 byte, out:     0 byte
+			doE_4               : in:   384 byte, out:   576 byte
+			anonFilter3_4       : in:     0 byte, out:   576 byte
+			Xor_7               : in:  1152 byte, out:   576 byte
+			Sbox_25             : in:    72 byte, out:    48 byte
+			Sbox_26             : in:    72 byte, out:    48 byte
+			Sbox_27             : in:    72 byte, out:    48 byte
+			Sbox_28             : in:    72 byte, out:    48 byte
+			Sbox_29             : in:    72 byte, out:    48 byte
+			Sbox_30             : in:    72 byte, out:    48 byte
+			Sbox_31_1           : in:    36 byte, out:    24 byte
+			Sbox_31_2           : in:    36 byte, out:    24 byte
+			Sbox_32             : in:    72 byte, out:    48 byte
+			doP_4               : in:   384 byte, out:   384 byte
+			Identity_7          : in:   384 byte, out:   384 byte
+			Xor_8               : in:   768 byte, out:   384 byte
+			Identity_8          : in:   384 byte, out:   384 byte
+			anonFilter0_4       : in:   384 byte, out:     0 byte
+			CrissCross_1        : in:   768 byte, out:   768 byte
+			doIPm1_1            : in:   768 byte, out:   768 byte
+			BitstoInts_1        : in:   768 byte, out:   768 byte
+			anonFilter1_1       : in:   768 byte, out:   768 byte
+			FileWriter_9        : in:   768 byte, out:     0 byte

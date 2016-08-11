@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+   <xsd:complexType name="interconnect" abstract="true"/>
+   <xsd:complexType name="noc">
+      <xsd:all>
+         <xsd:element name="nodes" minOccurs="0">
+            <xsd:complexType>
+               <xsd:sequence>
+                  <xsd:element name="node" type="node" minOccurs="0" maxOccurs="unbounded" nillable="true"/>
+               </xsd:sequence>
+            </xsd:complexType>
+         </xsd:element>
+      </xsd:all>
+      <xsd:attribute name="if_latency_recv" type="xsd:int" use="required"/>
+      <xsd:attribute name="if_latency_send" type="xsd:int" use="required"/>
+      <xsd:attribute name="comm_lib_overhead" type="xsd:int" use="required"/>
+   </xsd:complexType>
+   <xsd:complexType name="busInterconnect">
+      <xsd:complexContent>
+         <xsd:extension base="interconnect">
+            <xsd:sequence/>
+            <xsd:attribute name="width" type="xsd:int"/>
+            <xsd:attribute name="latency" type="xsd:int"/>
+            <xsd:attribute name="comm_lib_overhead" type="xsd:int"/>
+            <xsd:attribute name="numFlowIds" type="xsd:int"/>
+         </xsd:extension>
+      </xsd:complexContent>
+   </xsd:complexType>
+   <xsd:complexType name="node">
+      <xsd:all>
+         <xsd:element name="interconnect" minOccurs="0">
+            <xsd:complexType>
+               <xsd:sequence>
+                  <xsd:choice maxOccurs="unbounded">
+                     <xsd:element ref="switchmatrix_link"/>
+                     <xsd:element ref="bus"/>
+                  </xsd:choice>
+               </xsd:sequence>
+            </xsd:complexType>
+         </xsd:element>
+         <xsd:element name="cores" minOccurs="0">
+            <xsd:complexType>
+               <xsd:sequence>
+                  <xsd:element name="core" type="core" minOccurs="0" maxOccurs="unbounded" nillable="true"/>
+               </xsd:sequence>
+            </xsd:complexType>
+         </xsd:element>
+      </xsd:all>
+      <xsd:attribute name="x" type="xsd:int" use="required"/>
+      <xsd:attribute name="y" type="xsd:int" use="required"/>
+   </xsd:complexType>
+   <xsd:complexType name="core">
+      <xsd:all/>
+      <xsd:attribute name="id" type="xsd:int" use="required"/>
+      <xsd:attribute name="if_read_latency" type="xsd:int" use="required"/>
+      <xsd:attribute name="if_fifo_depths" type="xsd:int" use="required"/>
+      <xsd:attribute name="if_write_latency" type="xsd:int" use="required"/>
+   </xsd:complexType>
+   <xsd:complexType name="switchMatrixInterconnect">
+      <xsd:complexContent>
+         <xsd:extension base="interconnect">
+            <xsd:sequence/>
+            <xsd:attribute name="width" type="xsd:int"/>
+            <xsd:attribute name="latency" type="xsd:int"/>
+            <xsd:attribute name="master_core_id" type="xsd:int"/>
+            <xsd:attribute name="slave_core_id" type="xsd:int"/>
+            <xsd:attribute name="numFlowIds" type="xsd:int"/>
+         </xsd:extension>
+      </xsd:complexContent>
+   </xsd:complexType>
+   <xsd:element name="noc" type="noc"/>
+   <xsd:element name="bus" type="busInterconnect"/>
+   <xsd:element name="switchmatrix_link" type="switchMatrixInterconnect"/>
+</xsd:schema>

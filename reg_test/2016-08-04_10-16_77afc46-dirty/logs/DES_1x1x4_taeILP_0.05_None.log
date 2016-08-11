@@ -1,0 +1,6 @@
+11:38:56 INFO    Option :: Timout parameter is only available for sa partitioner
+11:38:56 INFO    Compile :: Current Config /home/coreva/coreva_dev/streamit_perf/config-2slot/
+11:38:56 INFO    Compile :: /home/coreva/coreva_dev/streamit/tests/DES.str
+11:38:56 INFO    Compile :: Arguments: [-xml=config/mpsoc_1x1x4.xml, -part=taeILP, -satimeout=0, -resa=2, -maxmult=100, --create-merge-split-file, --max-mem=0.05, --memlayout=local, --optimize=THROUGHPUT, --fileReader-mode=LIMIT_NO, --output-dir=reg_test/2016-08-04_10-16_77afc46-dirty/cfg1x1x4taeILPsatimeout0resa2maxmult100maxmem005memlayoutlocaloptimizeTHROUGHPUTfileReadermodeLIMITNO/, --create-timeline=reg_test/2016-08-04_10-16_77afc46-dirty/cfg1x1x4taeILPsatimeout0resa2maxmult100maxmem005memlayoutlocaloptimizeTHROUGHPUTfileReadermodeLIMITNO//DES/sim/trace/, tests/DES.str]
+11:39:10 SEVERE  chooseFilterEstimator :: unknown estimator
+make: *** [reg_test/2016-08-04_10-16_77afc46-dirty/cfg1x1x4taeILPsatimeout0resa2maxmult100maxmem005memlayoutlocaloptimizeTHROUGHPUTfileReadermodeLIMITNO/DES/.tc_gen] Error 255

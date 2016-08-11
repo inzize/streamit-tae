@@ -1,0 +1,858 @@
+cpu_0_0_0
+    Sbox_3
+        wait read Xor_1: 50 on CoreVAClusterChannel
+        wait write doP_1: 13 on MemoryChannel2
+        work: 352
+        done read Xor_1: 24 on CoreVAClusterChannel
+        done write doP_1: 1 on MemoryChannel2
+    Sbox_4
+        wait read Xor_1: 50 on CoreVAClusterChannel
+        wait write doP_1: 13 on MemoryChannel2
+        work: 340
+        done read Xor_1: 24 on CoreVAClusterChannel
+        done write doP_1: 1 on MemoryChannel2
+    Sbox_5
+        wait read Xor_1: 50 on CoreVAClusterChannel
+        wait write doP_1: 13 on MemoryChannel2
+        work: 340
+        done read Xor_1: 24 on CoreVAClusterChannel
+        done write doP_1: 1 on MemoryChannel2
+    Sbox_6
+        wait read Xor_1: 50 on CoreVAClusterChannel
+        wait write doP_1: 13 on MemoryChannel2
+        work: 340
+        done read Xor_1: 24 on CoreVAClusterChannel
+        done write doP_1: 1 on MemoryChannel2
+    Sbox_8
+        wait read Xor_1: 50 on CoreVAClusterChannel
+        wait write doP_1: 13 on MemoryChannel2
+        work: 340
+        done read Xor_1: 24 on CoreVAClusterChannel
+        done write doP_1: 1 on MemoryChannel2
+    doP_1
+        wait read Sbox_1_1: 50 on CoreVAClusterChannel
+        wait read Sbox_1_2: 50 on CoreVAClusterChannel
+        wait read Sbox_2_1: 50 on CoreVAClusterChannel
+        wait read Sbox_2_2: 50 on CoreVAClusterChannel
+        wait read Sbox_2_3: 50 on CoreVAClusterChannel
+        wait read Sbox_3: 13 on MemoryChannel2
+        wait read Sbox_4: 13 on MemoryChannel2
+        wait read Sbox_5: 13 on MemoryChannel2
+        wait read Sbox_6: 13 on MemoryChannel2
+        wait read Sbox_7: 50 on CoreVAClusterChannel
+        wait read Sbox_8: 13 on MemoryChannel2
+        wait read doP_1: 1170 on SimpleMergeSplitBuffer
+        wait write Xor_2: 20 on CoreVAClusterChannel
+        work: 3516
+        done read Sbox_1_1: 24 on CoreVAClusterChannel
+        done read Sbox_1_2: 24 on CoreVAClusterChannel
+        done read Sbox_2_1: 24 on CoreVAClusterChannel
+        done read Sbox_2_2: 24 on CoreVAClusterChannel
+        done read Sbox_2_3: 24 on CoreVAClusterChannel
+        done read Sbox_3: 1 on MemoryChannel2
+        done read Sbox_4: 1 on MemoryChannel2
+        done read Sbox_5: 1 on MemoryChannel2
+        done read Sbox_6: 1 on MemoryChannel2
+        done read Sbox_7: 24 on CoreVAClusterChannel
+        done read Sbox_8: 1 on MemoryChannel2
+        done write Xor_2: 21 on CoreVAClusterChannel
+    Identity_1
+        wait read doIP_1_1: 50 on CoreVAClusterChannel
+        wait read doIP_1_2: 50 on CoreVAClusterChannel
+        wait read Identity_1: 1206 on SimpleMergeSplitBuffer
+        wait write Xor_2: 20 on CoreVAClusterChannel
+        work: 1928
+        done read doIP_1_1: 24 on CoreVAClusterChannel
+        done read doIP_1_2: 24 on CoreVAClusterChannel
+        done write Xor_2: 21 on CoreVAClusterChannel
+    doE_2
+        wait read Xor_2: 50 on CoreVAClusterChannel
+        wait write Xor_3_1: 13 on MemoryChannel2
+        wait write Xor_3_2: 13 on MemoryChannel2
+        wait write Xor_3_3: 20 on CoreVAClusterChannel
+        wait write doE_2: 4 on SimpleMergeSplitBuffer
+        work: 4214
+        done read Xor_2: 24 on CoreVAClusterChannel
+        done write split: 2070 on SimpleMergeSplitBuffer
+        done write doE_2: 2070 on SimpleMergeSplitBuffer
+        done write Xor_3_1: 1 on MemoryChannel2
+        done write Xor_3_2: 1 on MemoryChannel2
+        done write Xor_3_3: 21 on CoreVAClusterChannel
+    Xor_3_1
+        wait read doE_2: 13 on MemoryChannel2
+        wait read anonFilter3_2: 50 on CoreVAClusterChannel
+        wait read Xor_3_1: 1743 on SimpleMergeSplitBuffer
+        wait write Sbox_9: 13 on MemoryChannel2
+        wait write Sbox_10: 20 on CoreVAClusterChannel
+        wait write Sbox_11: 13 on MemoryChannel2
+        wait write Sbox_12_1: 13 on MemoryChannel2
+        wait write Sbox_13: 13 on MemoryChannel2
+        wait write Sbox_14: 20 on CoreVAClusterChannel
+        wait write Sbox_15: 20 on CoreVAClusterChannel
+        wait write Sbox_16: 20 on CoreVAClusterChannel
+        wait write Sbox_12_2: 13 on MemoryChannel2
+        wait write Sbox_12_3: 20 on CoreVAClusterChannel
+        wait write Sbox_12_4: 13 on MemoryChannel2
+        wait write Xor_3_1: 4 on SimpleMergeSplitBuffer
+        work: 1538
+        done read doE_2: 1 on MemoryChannel2
+        done read anonFilter3_2: 24 on CoreVAClusterChannel
+        done write split: 1035 on SimpleMergeSplitBuffer
+        done write Xor_3_1: 1035 on SimpleMergeSplitBuffer
+        done write Sbox_9: 1 on MemoryChannel2
+        done write Sbox_10: 21 on CoreVAClusterChannel
+        done write Sbox_11: 1 on MemoryChannel2
+        done write Sbox_12_1: 1 on MemoryChannel2
+        done write Sbox_13: 1 on MemoryChannel2
+        done write Sbox_14: 21 on CoreVAClusterChannel
+        done write Sbox_15: 21 on CoreVAClusterChannel
+        done write Sbox_16: 21 on CoreVAClusterChannel
+        done write Sbox_12_2: 1 on MemoryChannel2
+        done write Sbox_12_3: 21 on CoreVAClusterChannel
+        done write Sbox_12_4: 1 on MemoryChannel2
+    Xor_3_2
+        wait read doE_2: 13 on MemoryChannel2
+        wait read anonFilter3_2: 50 on CoreVAClusterChannel
+        wait read Xor_3_2: 1743 on SimpleMergeSplitBuffer
+        wait write Sbox_9: 13 on MemoryChannel2
+        wait write Sbox_10: 20 on CoreVAClusterChannel
+        wait write Sbox_11: 13 on MemoryChannel2
+        wait write Sbox_12_1: 13 on MemoryChannel2
+        wait write Sbox_13: 13 on MemoryChannel2
+        wait write Sbox_14: 20 on CoreVAClusterChannel
+        wait write Sbox_15: 20 on CoreVAClusterChannel
+        wait write Sbox_16: 20 on CoreVAClusterChannel
+        wait write Sbox_12_2: 13 on MemoryChannel2
+        wait write Sbox_12_3: 20 on CoreVAClusterChannel
+        wait write Sbox_12_4: 13 on MemoryChannel2
+        wait write Xor_3_2: 4 on SimpleMergeSplitBuffer
+        work: 1538
+        done read doE_2: 1 on MemoryChannel2
+        done read anonFilter3_2: 24 on CoreVAClusterChannel
+        done write split: 1035 on SimpleMergeSplitBuffer
+        done write Xor_3_2: 1035 on SimpleMergeSplitBuffer
+        done write Sbox_9: 1 on MemoryChannel2
+        done write Sbox_10: 21 on CoreVAClusterChannel
+        done write Sbox_11: 1 on MemoryChannel2
+        done write Sbox_12_1: 1 on MemoryChannel2
+        done write Sbox_13: 1 on MemoryChannel2
+        done write Sbox_14: 21 on CoreVAClusterChannel
+        done write Sbox_15: 21 on CoreVAClusterChannel
+        done write Sbox_16: 21 on CoreVAClusterChannel
+        done write Sbox_12_2: 1 on MemoryChannel2
+        done write Sbox_12_3: 21 on CoreVAClusterChannel
+        done write Sbox_12_4: 1 on MemoryChannel2
+    Sbox_9
+        wait read Xor_3_1: 13 on MemoryChannel2
+        wait read Xor_3_2: 13 on MemoryChannel2
+        wait read Xor_3_3: 50 on CoreVAClusterChannel
+        wait read Sbox_9: 243 on SimpleMergeSplitBuffer
+        wait write doP_2: 20 on CoreVAClusterChannel
+        work: 352
+        done read Xor_3_1: 1 on MemoryChannel2
+        done read Xor_3_2: 1 on MemoryChannel2
+        done read Xor_3_3: 24 on CoreVAClusterChannel
+        done write doP_2: 21 on CoreVAClusterChannel
+    Sbox_11
+        wait read Xor_3_1: 13 on MemoryChannel2
+        wait read Xor_3_2: 13 on MemoryChannel2
+        wait read Xor_3_3: 50 on CoreVAClusterChannel
+        wait read Sbox_11: 243 on SimpleMergeSplitBuffer
+        wait write doP_2: 20 on CoreVAClusterChannel
+        work: 340
+        done read Xor_3_1: 1 on MemoryChannel2
+        done read Xor_3_2: 1 on MemoryChannel2
+        done read Xor_3_3: 24 on CoreVAClusterChannel
+        done write doP_2: 21 on CoreVAClusterChannel
+    Sbox_12_1
+        wait read Xor_3_1: 13 on MemoryChannel2
+        wait read Xor_3_2: 13 on MemoryChannel2
+        wait read Xor_3_3: 50 on CoreVAClusterChannel
+        wait read Sbox_12_1: 63 on SimpleMergeSplitBuffer
+        wait write doP_2: 20 on CoreVAClusterChannel
+        work: 91
+        done read Xor_3_1: 1 on MemoryChannel2
+        done read Xor_3_2: 1 on MemoryChannel2
+        done read Xor_3_3: 24 on CoreVAClusterChannel
+        done write doP_2: 21 on CoreVAClusterChannel
+    Sbox_12_2
+        wait read Xor_3_1: 13 on MemoryChannel2
+        wait read Xor_3_2: 13 on MemoryChannel2
+        wait read Xor_3_3: 50 on CoreVAClusterChannel
+        wait read Sbox_12_2: 63 on SimpleMergeSplitBuffer
+        wait write doP_2: 20 on CoreVAClusterChannel
+        work: 91
+        done read Xor_3_1: 1 on MemoryChannel2
+        done read Xor_3_2: 1 on MemoryChannel2
+        done read Xor_3_3: 24 on CoreVAClusterChannel
+        done write doP_2: 21 on CoreVAClusterChannel
+    Sbox_12_4
+        wait read Xor_3_1: 13 on MemoryChannel2
+        wait read Xor_3_2: 13 on MemoryChannel2
+        wait read Xor_3_3: 50 on CoreVAClusterChannel
+        wait read Sbox_12_4: 63 on SimpleMergeSplitBuffer
+        wait write doP_2: 20 on CoreVAClusterChannel
+        work: 91
+        done read Xor_3_1: 1 on MemoryChannel2
+        done read Xor_3_2: 1 on MemoryChannel2
+        done read Xor_3_3: 24 on CoreVAClusterChannel
+        done write doP_2: 21 on CoreVAClusterChannel
+    Sbox_13
+        wait read Xor_3_1: 13 on MemoryChannel2
+        wait read Xor_3_2: 13 on MemoryChannel2
+        wait read Xor_3_3: 50 on CoreVAClusterChannel
+        wait read Sbox_13: 243 on SimpleMergeSplitBuffer
+        wait write doP_2: 20 on CoreVAClusterChannel
+        work: 352
+        done read Xor_3_1: 1 on MemoryChannel2
+        done read Xor_3_2: 1 on MemoryChannel2
+        done read Xor_3_3: 24 on CoreVAClusterChannel
+        done write doP_2: 21 on CoreVAClusterChannel
+    Identity_3
+        wait read Identity_2: 50 on CoreVAClusterChannel
+        wait write Xor_4: 20 on CoreVAClusterChannel
+        work: 2311
+        done read Identity_2: 24 on CoreVAClusterChannel
+        done write Xor_4: 21 on CoreVAClusterChannel
+    doE_3_1
+        wait read Xor_4: 50 on CoreVAClusterChannel
+        wait write Xor_5: 20 on CoreVAClusterChannel
+        work: 2133
+        done read Xor_4: 24 on CoreVAClusterChannel
+        done write Xor_5: 21 on CoreVAClusterChannel
+    Sbox_17
+        wait read Xor_5: 50 on CoreVAClusterChannel
+        wait write doP_3: 20 on CoreVAClusterChannel
+        work: 340
+        done read Xor_5: 24 on CoreVAClusterChannel
+        done write doP_3: 21 on CoreVAClusterChannel
+    Sbox_20
+        wait read Xor_5: 50 on CoreVAClusterChannel
+        wait write doP_3: 20 on CoreVAClusterChannel
+        work: 340
+        done read Xor_5: 24 on CoreVAClusterChannel
+        done write doP_3: 21 on CoreVAClusterChannel
+    Sbox_21
+        wait read Xor_5: 50 on CoreVAClusterChannel
+        wait write doP_3: 20 on CoreVAClusterChannel
+        work: 340
+        done read Xor_5: 24 on CoreVAClusterChannel
+        done write doP_3: 21 on CoreVAClusterChannel
+    Sbox_22
+        wait read Xor_5: 50 on CoreVAClusterChannel
+        wait write doP_3: 20 on CoreVAClusterChannel
+        work: 340
+        done read Xor_5: 24 on CoreVAClusterChannel
+        done write doP_3: 21 on CoreVAClusterChannel
+    Identity_6
+        wait read Xor_4: 50 on CoreVAClusterChannel
+        wait write Identity_7: 13 on MemoryChannel2
+        wait write anonFilter0_4: 13 on MemoryChannel2
+        wait write Identity_6: 4 on SimpleMergeSplitBuffer
+        work: 1928
+        done read Xor_4: 24 on CoreVAClusterChannel
+        done write split: 1752 on SimpleMergeSplitBuffer
+        done write Identity_6: 1752 on SimpleMergeSplitBuffer
+        done write Identity_7: 1 on MemoryChannel2
+        done write anonFilter0_4: 1 on MemoryChannel2
+    anonFilter0_3
+        wait read Identity_4: 50 on CoreVAClusterChannel
+        work: 5
+        done read Identity_4: 24 on CoreVAClusterChannel
+    Sbox_27
+        wait read Xor_7: 50 on CoreVAClusterChannel
+        wait write doP_4: 20 on CoreVAClusterChannel
+        work: 340
+        done read Xor_7: 24 on CoreVAClusterChannel
+        done write doP_4: 21 on CoreVAClusterChannel
+    Sbox_28
+        wait read Xor_7: 50 on CoreVAClusterChannel
+        wait write doP_4: 20 on CoreVAClusterChannel
+        work: 340
+        done read Xor_7: 24 on CoreVAClusterChannel
+        done write doP_4: 21 on CoreVAClusterChannel
+    Sbox_29
+        wait read Xor_7: 50 on CoreVAClusterChannel
+        wait write doP_4: 20 on CoreVAClusterChannel
+        work: 352
+        done read Xor_7: 24 on CoreVAClusterChannel
+        done write doP_4: 21 on CoreVAClusterChannel
+    Sbox_30
+        wait read Xor_7: 50 on CoreVAClusterChannel
+        wait write doP_4: 20 on CoreVAClusterChannel
+        work: 340
+        done read Xor_7: 24 on CoreVAClusterChannel
+        done write doP_4: 21 on CoreVAClusterChannel
+    Sbox_32
+        wait read Xor_7: 50 on CoreVAClusterChannel
+        wait write doP_4: 20 on CoreVAClusterChannel
+        work: 340
+        done read Xor_7: 24 on CoreVAClusterChannel
+        done write doP_4: 21 on CoreVAClusterChannel
+    Identity_7
+        wait read Identity_6: 13 on MemoryChannel2
+        wait write Xor_8: 20 on CoreVAClusterChannel
+        work: 1928
+        done read Identity_6: 1 on MemoryChannel2
+        done write Xor_8: 21 on CoreVAClusterChannel
+    anonFilter0_4
+        wait read Identity_6: 13 on MemoryChannel2
+        work: 5
+        done read Identity_6: 1 on MemoryChannel2
+    doIPm1_1
+        wait read CrissCross_1: 50 on CoreVAClusterChannel
+        wait write BitstoInts_1: 20 on CoreVAClusterChannel
+        work: 5785
+        done read CrissCross_1: 24 on CoreVAClusterChannel
+        done write BitstoInts_1: 21 on CoreVAClusterChannel
+    total: 56074
+cpu_0_0_1
+    FileReader_0
+        wait read file: 29 on CoreVAFileInputChannel
+        wait write doIP_1_1: 20 on CoreVAClusterChannel
+        wait write doIP_1_2: 20 on CoreVAClusterChannel
+        wait write FileReader_0: 4 on FileReaderSplitBuffer
+        work: 1
+        done write split: 1000 on FileReaderSplitBuffer
+        done write file: 36 on CoreVAFileInputChannel
+        done write doIP_1_1: 21 on CoreVAClusterChannel
+        done write doIP_1_2: 21 on CoreVAClusterChannel
+    Xor_1
+        wait read doE_1: 50 on CoreVAClusterChannel
+        wait read anonFilter3_1: 50 on CoreVAClusterChannel
+        wait read Xor_1: 5774 on SimpleMergeSplitBuffer
+        wait write Sbox_1_1: 20 on CoreVAClusterChannel
+        wait write Sbox_2_1: 20 on CoreVAClusterChannel
+        wait write Sbox_3: 20 on CoreVAClusterChannel
+        wait write Sbox_4: 20 on CoreVAClusterChannel
+        wait write Sbox_5: 20 on CoreVAClusterChannel
+        wait write Sbox_6: 20 on CoreVAClusterChannel
+        wait write Sbox_7: 13 on MemoryChannel2
+        wait write Sbox_8: 20 on CoreVAClusterChannel
+        wait write Sbox_1_2: 20 on CoreVAClusterChannel
+        wait write Sbox_2_2: 20 on CoreVAClusterChannel
+        wait write Sbox_2_3: 20 on CoreVAClusterChannel
+        wait write Xor_1: 4 on SimpleMergeSplitBuffer
+        work: 4034
+        done read doE_1: 24 on CoreVAClusterChannel
+        done read anonFilter3_1: 24 on CoreVAClusterChannel
+        done write split: 3042 on SimpleMergeSplitBuffer
+        done write Xor_1: 3042 on SimpleMergeSplitBuffer
+        done write Sbox_1_1: 21 on CoreVAClusterChannel
+        done write Sbox_2_1: 21 on CoreVAClusterChannel
+        done write Sbox_3: 21 on CoreVAClusterChannel
+        done write Sbox_4: 21 on CoreVAClusterChannel
+        done write Sbox_5: 21 on CoreVAClusterChannel
+        done write Sbox_6: 21 on CoreVAClusterChannel
+        done write Sbox_7: 1 on MemoryChannel2
+        done write Sbox_8: 21 on CoreVAClusterChannel
+        done write Sbox_1_2: 21 on CoreVAClusterChannel
+        done write Sbox_2_2: 21 on CoreVAClusterChannel
+        done write Sbox_2_3: 21 on CoreVAClusterChannel
+    Sbox_7
+        wait read Xor_1: 13 on MemoryChannel2
+        wait write doP_1: 20 on CoreVAClusterChannel
+        work: 352
+        done read Xor_1: 1 on MemoryChannel2
+        done write doP_1: 21 on CoreVAClusterChannel
+    Identity_2
+        wait read doIP_1_1: 50 on CoreVAClusterChannel
+        wait read doIP_1_2: 50 on CoreVAClusterChannel
+        wait read Identity_2: 1206 on SimpleMergeSplitBuffer
+        wait write Identity_3: 20 on CoreVAClusterChannel
+        wait write anonFilter0_2: 13 on MemoryChannel2
+        wait write Identity_2: 4 on SimpleMergeSplitBuffer
+        work: 1928
+        done read doIP_1_1: 24 on CoreVAClusterChannel
+        done read doIP_1_2: 24 on CoreVAClusterChannel
+        done write split: 1752 on SimpleMergeSplitBuffer
+        done write Identity_2: 1752 on SimpleMergeSplitBuffer
+        done write Identity_3: 21 on CoreVAClusterChannel
+        done write anonFilter0_2: 1 on MemoryChannel2
+    Sbox_14
+        wait read Xor_3_1: 50 on CoreVAClusterChannel
+        wait read Xor_3_2: 50 on CoreVAClusterChannel
+        wait read Xor_3_3: 50 on CoreVAClusterChannel
+        wait read Sbox_14: 243 on SimpleMergeSplitBuffer
+        wait write doP_2: 13 on MemoryChannel2
+        work: 340
+        done read Xor_3_1: 24 on CoreVAClusterChannel
+        done read Xor_3_2: 24 on CoreVAClusterChannel
+        done read Xor_3_3: 24 on CoreVAClusterChannel
+        done write doP_2: 1 on MemoryChannel2
+    Sbox_15
+        wait read Xor_3_1: 50 on CoreVAClusterChannel
+        wait read Xor_3_2: 50 on CoreVAClusterChannel
+        wait read Xor_3_3: 50 on CoreVAClusterChannel
+        wait read Sbox_15: 243 on SimpleMergeSplitBuffer
+        wait write doP_2: 13 on MemoryChannel2
+        work: 340
+        done read Xor_3_1: 24 on CoreVAClusterChannel
+        done read Xor_3_2: 24 on CoreVAClusterChannel
+        done read Xor_3_3: 24 on CoreVAClusterChannel
+        done write doP_2: 1 on MemoryChannel2
+    doP_2
+        wait read Sbox_9: 50 on CoreVAClusterChannel
+        wait read Sbox_10: 50 on CoreVAClusterChannel
+        wait read Sbox_11: 50 on CoreVAClusterChannel
+        wait read Sbox_12_1: 50 on CoreVAClusterChannel
+        wait read Sbox_12_2: 50 on CoreVAClusterChannel
+        wait read Sbox_12_3: 50 on CoreVAClusterChannel
+        wait read Sbox_12_4: 50 on CoreVAClusterChannel
+        wait read Sbox_13: 50 on CoreVAClusterChannel
+        wait read Sbox_14: 13 on MemoryChannel2
+        wait read Sbox_15: 13 on MemoryChannel2
+        wait read Sbox_16: 50 on CoreVAClusterChannel
+        wait read doP_2: 1179 on SimpleMergeSplitBuffer
+        wait write Xor_4: 20 on CoreVAClusterChannel
+        work: 3485
+        done read Sbox_9: 24 on CoreVAClusterChannel
+        done read Sbox_10: 24 on CoreVAClusterChannel
+        done read Sbox_11: 24 on CoreVAClusterChannel
+        done read Sbox_12_1: 24 on CoreVAClusterChannel
+        done read Sbox_12_2: 24 on CoreVAClusterChannel
+        done read Sbox_12_3: 24 on CoreVAClusterChannel
+        done read Sbox_12_4: 24 on CoreVAClusterChannel
+        done read Sbox_13: 24 on CoreVAClusterChannel
+        done read Sbox_14: 1 on MemoryChannel2
+        done read Sbox_15: 1 on MemoryChannel2
+        done read Sbox_16: 24 on CoreVAClusterChannel
+        done write Xor_4: 21 on CoreVAClusterChannel
+    Identity_4
+        wait read Xor_2: 50 on CoreVAClusterChannel
+        wait write Identity_5: 13 on MemoryChannel2
+        wait write anonFilter0_3: 20 on CoreVAClusterChannel
+        wait write Identity_4: 4 on SimpleMergeSplitBuffer
+        work: 2311
+        done read Xor_2: 24 on CoreVAClusterChannel
+        done write split: 1752 on SimpleMergeSplitBuffer
+        done write Identity_4: 1752 on SimpleMergeSplitBuffer
+        done write Identity_5: 1 on MemoryChannel2
+        done write anonFilter0_3: 21 on CoreVAClusterChannel
+    anonFilter0_2
+        wait read Identity_2: 13 on MemoryChannel2
+        work: 5
+        done read Identity_2: 1 on MemoryChannel2
+    doE_3_2
+        wait read Xor_4: 50 on CoreVAClusterChannel
+        wait write Xor_5: 13 on MemoryChannel2
+        work: 2133
+        done read Xor_4: 24 on CoreVAClusterChannel
+        done write Xor_5: 1 on MemoryChannel2
+    Xor_5
+        wait read doE_3_1: 50 on CoreVAClusterChannel
+        wait read doE_3_2: 13 on MemoryChannel2
+        wait read anonFilter3_3: 50 on CoreVAClusterChannel
+        wait read Xor_5: 3510 on SimpleMergeSplitBuffer
+        wait write Sbox_17: 20 on CoreVAClusterChannel
+        wait write Sbox_18: 13 on MemoryChannel2
+        wait write Sbox_19: 13 on MemoryChannel2
+        wait write Sbox_20: 20 on CoreVAClusterChannel
+        wait write Sbox_21: 20 on CoreVAClusterChannel
+        wait write Sbox_22: 20 on CoreVAClusterChannel
+        wait write Sbox_23: 13 on MemoryChannel2
+        wait write Sbox_24: 13 on MemoryChannel2
+        wait write Xor_5: 4 on SimpleMergeSplitBuffer
+        work: 4034
+        done read doE_3_1: 24 on CoreVAClusterChannel
+        done read doE_3_2: 1 on MemoryChannel2
+        done read anonFilter3_3: 24 on CoreVAClusterChannel
+        done write split: 3132 on SimpleMergeSplitBuffer
+        done write Xor_5: 3132 on SimpleMergeSplitBuffer
+        done write Sbox_17: 21 on CoreVAClusterChannel
+        done write Sbox_18: 1 on MemoryChannel2
+        done write Sbox_19: 1 on MemoryChannel2
+        done write Sbox_20: 21 on CoreVAClusterChannel
+        done write Sbox_21: 21 on CoreVAClusterChannel
+        done write Sbox_22: 21 on CoreVAClusterChannel
+        done write Sbox_23: 1 on MemoryChannel2
+        done write Sbox_24: 1 on MemoryChannel2
+    Sbox_18
+        wait read Xor_5: 13 on MemoryChannel2
+        wait write doP_3: 13 on MemoryChannel2
+        work: 340
+        done read Xor_5: 1 on MemoryChannel2
+        done write doP_3: 1 on MemoryChannel2
+    Sbox_19
+        wait read Xor_5: 13 on MemoryChannel2
+        wait write doP_3: 13 on MemoryChannel2
+        work: 352
+        done read Xor_5: 1 on MemoryChannel2
+        done write doP_3: 1 on MemoryChannel2
+    Sbox_23
+        wait read Xor_5: 13 on MemoryChannel2
+        wait write doP_3: 13 on MemoryChannel2
+        work: 352
+        done read Xor_5: 1 on MemoryChannel2
+        done write doP_3: 1 on MemoryChannel2
+    Sbox_24
+        wait read Xor_5: 13 on MemoryChannel2
+        wait write doP_3: 13 on MemoryChannel2
+        work: 340
+        done read Xor_5: 1 on MemoryChannel2
+        done write doP_3: 1 on MemoryChannel2
+    doP_3
+        wait read Sbox_17: 50 on CoreVAClusterChannel
+        wait read Sbox_18: 13 on MemoryChannel2
+        wait read Sbox_19: 13 on MemoryChannel2
+        wait read Sbox_20: 50 on CoreVAClusterChannel
+        wait read Sbox_21: 50 on CoreVAClusterChannel
+        wait read Sbox_22: 50 on CoreVAClusterChannel
+        wait read Sbox_23: 13 on MemoryChannel2
+        wait read Sbox_24: 13 on MemoryChannel2
+        wait read doP_3: 1260 on SimpleMergeSplitBuffer
+        wait write Xor_6: 20 on CoreVAClusterChannel
+        work: 3516
+        done read Sbox_17: 24 on CoreVAClusterChannel
+        done read Sbox_18: 1 on MemoryChannel2
+        done read Sbox_19: 1 on MemoryChannel2
+        done read Sbox_20: 24 on CoreVAClusterChannel
+        done read Sbox_21: 24 on CoreVAClusterChannel
+        done read Sbox_22: 24 on CoreVAClusterChannel
+        done read Sbox_23: 1 on MemoryChannel2
+        done read Sbox_24: 1 on MemoryChannel2
+        done write Xor_6: 21 on CoreVAClusterChannel
+    Identity_5
+        wait read Identity_4: 13 on MemoryChannel2
+        wait write Xor_6: 20 on CoreVAClusterChannel
+        work: 1928
+        done read Identity_4: 1 on MemoryChannel2
+        done write Xor_6: 21 on CoreVAClusterChannel
+    anonFilter3_4
+        wait write Xor_7: 20 on CoreVAClusterChannel
+        work: 3052
+        done write Xor_7: 21 on CoreVAClusterChannel
+    Sbox_26
+        wait read Xor_7: 50 on CoreVAClusterChannel
+        wait write doP_4: 20 on CoreVAClusterChannel
+        work: 340
+        done read Xor_7: 24 on CoreVAClusterChannel
+        done write doP_4: 21 on CoreVAClusterChannel
+    Identity_8
+        wait read Xor_6: 50 on CoreVAClusterChannel
+        wait write CrissCross_1: 20 on CoreVAClusterChannel
+        work: 1928
+        done read Xor_6: 24 on CoreVAClusterChannel
+        done write CrissCross_1: 21 on CoreVAClusterChannel
+    total: 68530
+cpu_0_0_2
+    doIP_1_1
+        wait read FileReader_0: 50 on CoreVAClusterChannel
+        wait write doE_1: 13 on MemoryChannel2
+        wait write Identity_2: 20 on CoreVAClusterChannel
+        wait write Identity_1: 20 on CoreVAClusterChannel
+        wait write anonFilter0_1: 20 on CoreVAClusterChannel
+        wait write doIP_1_1: 4 on SimpleMergeSplitBuffer
+        work: 2706
+        done read FileReader_0: 24 on CoreVAClusterChannel
+        done write split: 2742 on SimpleMergeSplitBuffer
+        done write doIP_1_1: 2742 on SimpleMergeSplitBuffer
+        done write doE_1: 1 on MemoryChannel2
+        done write Identity_2: 21 on CoreVAClusterChannel
+        done write Identity_1: 21 on CoreVAClusterChannel
+        done write anonFilter0_1: 21 on CoreVAClusterChannel
+    doE_1
+        wait read doIP_1_1: 13 on MemoryChannel2
+        wait read doIP_1_2: 50 on CoreVAClusterChannel
+        wait read doE_1: 1206 on SimpleMergeSplitBuffer
+        wait write Xor_1: 20 on CoreVAClusterChannel
+        work: 4214
+        done read doIP_1_1: 1 on MemoryChannel2
+        done read doIP_1_2: 24 on CoreVAClusterChannel
+        done write Xor_1: 21 on CoreVAClusterChannel
+    Sbox_2_1
+        wait read Xor_1: 50 on CoreVAClusterChannel
+        wait write doP_1: 20 on CoreVAClusterChannel
+        work: 120
+        done read Xor_1: 24 on CoreVAClusterChannel
+        done write doP_1: 21 on CoreVAClusterChannel
+    Sbox_2_2
+        wait read Xor_1: 50 on CoreVAClusterChannel
+        wait write doP_1: 20 on CoreVAClusterChannel
+        work: 120
+        done read Xor_1: 24 on CoreVAClusterChannel
+        done write doP_1: 21 on CoreVAClusterChannel
+    Sbox_2_3
+        wait read Xor_1: 50 on CoreVAClusterChannel
+        wait write doP_1: 20 on CoreVAClusterChannel
+        work: 120
+        done read Xor_1: 24 on CoreVAClusterChannel
+        done write doP_1: 21 on CoreVAClusterChannel
+    Xor_2
+        wait read doP_1: 50 on CoreVAClusterChannel
+        wait read Identity_1: 50 on CoreVAClusterChannel
+        wait read Xor_2: 2736 on SimpleMergeSplitBuffer
+        wait write doE_2: 20 on CoreVAClusterChannel
+        wait write Identity_4: 20 on CoreVAClusterChannel
+        wait write Xor_2: 4 on SimpleMergeSplitBuffer
+        work: 2690
+        done read doP_1: 24 on CoreVAClusterChannel
+        done read Identity_1: 24 on CoreVAClusterChannel
+        done write split: 1752 on SimpleMergeSplitBuffer
+        done write Xor_2: 1752 on SimpleMergeSplitBuffer
+        done write doE_2: 21 on CoreVAClusterChannel
+        done write Identity_4: 21 on CoreVAClusterChannel
+    anonFilter3_2
+        wait write Xor_3_1: 20 on CoreVAClusterChannel
+        wait write Xor_3_2: 20 on CoreVAClusterChannel
+        wait write Xor_3_3: 13 on MemoryChannel2
+        wait write anonFilter3_2: 4 on SimpleMergeSplitBuffer
+        work: 3052
+        done write split: 2070 on SimpleMergeSplitBuffer
+        done write anonFilter3_2: 2070 on SimpleMergeSplitBuffer
+        done write Xor_3_1: 21 on CoreVAClusterChannel
+        done write Xor_3_2: 21 on CoreVAClusterChannel
+        done write Xor_3_3: 1 on MemoryChannel2
+    Xor_3_3
+        wait read doE_2: 50 on CoreVAClusterChannel
+        wait read anonFilter3_2: 13 on MemoryChannel2
+        wait read Xor_3_3: 1743 on SimpleMergeSplitBuffer
+        wait write Sbox_9: 20 on CoreVAClusterChannel
+        wait write Sbox_10: 13 on MemoryChannel2
+        wait write Sbox_11: 20 on CoreVAClusterChannel
+        wait write Sbox_12_1: 20 on CoreVAClusterChannel
+        wait write Sbox_13: 20 on CoreVAClusterChannel
+        wait write Sbox_14: 20 on CoreVAClusterChannel
+        wait write Sbox_15: 20 on CoreVAClusterChannel
+        wait write Sbox_16: 20 on CoreVAClusterChannel
+        wait write Sbox_12_2: 20 on CoreVAClusterChannel
+        wait write Sbox_12_3: 20 on CoreVAClusterChannel
+        wait write Sbox_12_4: 20 on CoreVAClusterChannel
+        wait write Xor_3_3: 4 on SimpleMergeSplitBuffer
+        work: 1538
+        done read doE_2: 24 on CoreVAClusterChannel
+        done read anonFilter3_2: 1 on MemoryChannel2
+        done write split: 1035 on SimpleMergeSplitBuffer
+        done write Xor_3_3: 1035 on SimpleMergeSplitBuffer
+        done write Sbox_9: 21 on CoreVAClusterChannel
+        done write Sbox_10: 1 on MemoryChannel2
+        done write Sbox_11: 21 on CoreVAClusterChannel
+        done write Sbox_12_1: 21 on CoreVAClusterChannel
+        done write Sbox_13: 21 on CoreVAClusterChannel
+        done write Sbox_14: 21 on CoreVAClusterChannel
+        done write Sbox_15: 21 on CoreVAClusterChannel
+        done write Sbox_16: 21 on CoreVAClusterChannel
+        done write Sbox_12_2: 21 on CoreVAClusterChannel
+        done write Sbox_12_3: 21 on CoreVAClusterChannel
+        done write Sbox_12_4: 21 on CoreVAClusterChannel
+    Sbox_10
+        wait read Xor_3_1: 50 on CoreVAClusterChannel
+        wait read Xor_3_2: 50 on CoreVAClusterChannel
+        wait read Xor_3_3: 13 on MemoryChannel2
+        wait read Sbox_10: 243 on SimpleMergeSplitBuffer
+        wait write doP_2: 20 on CoreVAClusterChannel
+        work: 340
+        done read Xor_3_1: 24 on CoreVAClusterChannel
+        done read Xor_3_2: 24 on CoreVAClusterChannel
+        done read Xor_3_3: 1 on MemoryChannel2
+        done write doP_2: 21 on CoreVAClusterChannel
+    Xor_4
+        wait read doP_2: 50 on CoreVAClusterChannel
+        wait read Identity_3: 50 on CoreVAClusterChannel
+        wait read Xor_4: 2736 on SimpleMergeSplitBuffer
+        wait write doE_3_1: 20 on CoreVAClusterChannel
+        wait write Identity_6: 20 on CoreVAClusterChannel
+        wait write doE_3_2: 20 on CoreVAClusterChannel
+        wait write Xor_4: 4 on SimpleMergeSplitBuffer
+        work: 2690
+        done read doP_2: 24 on CoreVAClusterChannel
+        done read Identity_3: 24 on CoreVAClusterChannel
+        done write split: 2742 on SimpleMergeSplitBuffer
+        done write Xor_4: 2742 on SimpleMergeSplitBuffer
+        done write doE_3_1: 21 on CoreVAClusterChannel
+        done write Identity_6: 21 on CoreVAClusterChannel
+        done write doE_3_2: 21 on CoreVAClusterChannel
+    doE_4
+        wait read Xor_6: 50 on CoreVAClusterChannel
+        wait write Xor_7: 13 on MemoryChannel2
+        work: 4214
+        done read Xor_6: 24 on CoreVAClusterChannel
+        done write Xor_7: 1 on MemoryChannel2
+    Xor_7
+        wait read doE_4: 13 on MemoryChannel2
+        wait read anonFilter3_4: 50 on CoreVAClusterChannel
+        wait read Xor_7: 4104 on SimpleMergeSplitBuffer
+        wait write Sbox_25: 13 on MemoryChannel2
+        wait write Sbox_26: 20 on CoreVAClusterChannel
+        wait write Sbox_27: 20 on CoreVAClusterChannel
+        wait write Sbox_28: 20 on CoreVAClusterChannel
+        wait write Sbox_29: 20 on CoreVAClusterChannel
+        wait write Sbox_30: 20 on CoreVAClusterChannel
+        wait write Sbox_31_1: 20 on CoreVAClusterChannel
+        wait write Sbox_32: 20 on CoreVAClusterChannel
+        wait write Sbox_31_2: 20 on CoreVAClusterChannel
+        wait write Xor_7: 4 on SimpleMergeSplitBuffer
+        work: 4034
+        done read doE_4: 1 on MemoryChannel2
+        done read anonFilter3_4: 24 on CoreVAClusterChannel
+        done write split: 3078 on SimpleMergeSplitBuffer
+        done write Xor_7: 3078 on SimpleMergeSplitBuffer
+        done write Sbox_25: 1 on MemoryChannel2
+        done write Sbox_26: 21 on CoreVAClusterChannel
+        done write Sbox_27: 21 on CoreVAClusterChannel
+        done write Sbox_28: 21 on CoreVAClusterChannel
+        done write Sbox_29: 21 on CoreVAClusterChannel
+        done write Sbox_30: 21 on CoreVAClusterChannel
+        done write Sbox_31_1: 21 on CoreVAClusterChannel
+        done write Sbox_32: 21 on CoreVAClusterChannel
+        done write Sbox_31_2: 21 on CoreVAClusterChannel
+    Sbox_25
+        wait read Xor_7: 13 on MemoryChannel2
+        wait write doP_4: 20 on CoreVAClusterChannel
+        work: 352
+        done read Xor_7: 1 on MemoryChannel2
+        done write doP_4: 21 on CoreVAClusterChannel
+    FileWriter_9
+        wait read anonFilter1_1: 50 on CoreVAClusterChannel
+        wait write file: 29 on CoreVAFileOutputChannel
+        wait write FileWriter_9: 0 on FileWriterMergeBuffer
+        work: 0
+        done read anonFilter1_1: 24 on CoreVAClusterChannel
+        done write file: 34 on CoreVAFileOutputChannel
+    total: 68527
+cpu_0_0_3
+    doIP_1_2
+        wait read FileReader_0: 50 on CoreVAClusterChannel
+        wait write doE_1: 20 on CoreVAClusterChannel
+        wait write Identity_2: 20 on CoreVAClusterChannel
+        wait write Identity_1: 20 on CoreVAClusterChannel
+        wait write anonFilter0_1: 13 on MemoryChannel2
+        wait write doIP_1_2: 4 on SimpleMergeSplitBuffer
+        work: 2706
+        done read FileReader_0: 24 on CoreVAClusterChannel
+        done write split: 2742 on SimpleMergeSplitBuffer
+        done write doIP_1_2: 2742 on SimpleMergeSplitBuffer
+        done write doE_1: 21 on CoreVAClusterChannel
+        done write Identity_2: 21 on CoreVAClusterChannel
+        done write Identity_1: 21 on CoreVAClusterChannel
+        done write anonFilter0_1: 1 on MemoryChannel2
+    anonFilter3_1
+        wait write Xor_1: 20 on CoreVAClusterChannel
+        work: 3052
+        done write Xor_1: 21 on CoreVAClusterChannel
+    Sbox_1_1
+        wait read Xor_1: 50 on CoreVAClusterChannel
+        wait write doP_1: 20 on CoreVAClusterChannel
+        work: 172
+        done read Xor_1: 24 on CoreVAClusterChannel
+        done write doP_1: 21 on CoreVAClusterChannel
+    Sbox_1_2
+        wait read Xor_1: 50 on CoreVAClusterChannel
+        wait write doP_1: 20 on CoreVAClusterChannel
+        work: 172
+        done read Xor_1: 24 on CoreVAClusterChannel
+        done write doP_1: 21 on CoreVAClusterChannel
+    anonFilter0_1
+        wait read doIP_1_1: 50 on CoreVAClusterChannel
+        wait read doIP_1_2: 13 on MemoryChannel2
+        wait read anonFilter0_1: 1206 on SimpleMergeSplitBuffer
+        work: 5
+        done read doIP_1_1: 24 on CoreVAClusterChannel
+        done read doIP_1_2: 1 on MemoryChannel2
+    Sbox_12_3
+        wait read Xor_3_1: 50 on CoreVAClusterChannel
+        wait read Xor_3_2: 50 on CoreVAClusterChannel
+        wait read Xor_3_3: 50 on CoreVAClusterChannel
+        wait read Sbox_12_3: 63 on SimpleMergeSplitBuffer
+        wait write doP_2: 20 on CoreVAClusterChannel
+        work: 91
+        done read Xor_3_1: 24 on CoreVAClusterChannel
+        done read Xor_3_2: 24 on CoreVAClusterChannel
+        done read Xor_3_3: 24 on CoreVAClusterChannel
+        done write doP_2: 21 on CoreVAClusterChannel
+    Sbox_16
+        wait read Xor_3_1: 50 on CoreVAClusterChannel
+        wait read Xor_3_2: 50 on CoreVAClusterChannel
+        wait read Xor_3_3: 50 on CoreVAClusterChannel
+        wait read Sbox_16: 243 on SimpleMergeSplitBuffer
+        wait write doP_2: 20 on CoreVAClusterChannel
+        work: 340
+        done read Xor_3_1: 24 on CoreVAClusterChannel
+        done read Xor_3_2: 24 on CoreVAClusterChannel
+        done read Xor_3_3: 24 on CoreVAClusterChannel
+        done write doP_2: 21 on CoreVAClusterChannel
+    anonFilter3_3
+        wait write Xor_5: 20 on CoreVAClusterChannel
+        work: 3005
+        done write Xor_5: 21 on CoreVAClusterChannel
+    Xor_6
+        wait read doP_3: 50 on CoreVAClusterChannel
+        wait read Identity_5: 50 on CoreVAClusterChannel
+        wait read Xor_6: 2736 on SimpleMergeSplitBuffer
+        wait write doE_4: 20 on CoreVAClusterChannel
+        wait write Identity_8: 20 on CoreVAClusterChannel
+        wait write Xor_6: 4 on SimpleMergeSplitBuffer
+        work: 2690
+        done read doP_3: 24 on CoreVAClusterChannel
+        done read Identity_5: 24 on CoreVAClusterChannel
+        done write split: 2701 on SimpleMergeSplitBuffer
+        done write Xor_6: 2701 on SimpleMergeSplitBuffer
+        done write doE_4: 21 on CoreVAClusterChannel
+        done write Identity_8: 21 on CoreVAClusterChannel
+    Sbox_31_1
+        wait read Xor_7: 50 on CoreVAClusterChannel
+        wait write doP_4: 13 on MemoryChannel2
+        work: 172
+        done read Xor_7: 24 on CoreVAClusterChannel
+        done write doP_4: 1 on MemoryChannel2
+    Sbox_31_2
+        wait read Xor_7: 50 on CoreVAClusterChannel
+        wait write doP_4: 13 on MemoryChannel2
+        work: 172
+        done read Xor_7: 24 on CoreVAClusterChannel
+        done write doP_4: 1 on MemoryChannel2
+    doP_4
+        wait read Sbox_25: 50 on CoreVAClusterChannel
+        wait read Sbox_26: 50 on CoreVAClusterChannel
+        wait read Sbox_27: 50 on CoreVAClusterChannel
+        wait read Sbox_28: 50 on CoreVAClusterChannel
+        wait read Sbox_29: 50 on CoreVAClusterChannel
+        wait read Sbox_30: 50 on CoreVAClusterChannel
+        wait read Sbox_31_1: 13 on MemoryChannel2
+        wait read Sbox_31_2: 13 on MemoryChannel2
+        wait read Sbox_32: 50 on CoreVAClusterChannel
+        wait read doP_4: 1206 on SimpleMergeSplitBuffer
+        wait write Xor_8: 13 on MemoryChannel2
+        work: 3485
+        done read Sbox_25: 24 on CoreVAClusterChannel
+        done read Sbox_26: 24 on CoreVAClusterChannel
+        done read Sbox_27: 24 on CoreVAClusterChannel
+        done read Sbox_28: 24 on CoreVAClusterChannel
+        done read Sbox_29: 24 on CoreVAClusterChannel
+        done read Sbox_30: 24 on CoreVAClusterChannel
+        done read Sbox_31_1: 1 on MemoryChannel2
+        done read Sbox_31_2: 1 on MemoryChannel2
+        done read Sbox_32: 24 on CoreVAClusterChannel
+        done write Xor_8: 1 on MemoryChannel2
+    Xor_8
+        wait read doP_4: 13 on MemoryChannel2
+        wait read Identity_7: 50 on CoreVAClusterChannel
+        wait read Xor_8: 3471 on SimpleMergeSplitBuffer
+        wait write CrissCross_1: 13 on MemoryChannel2
+        work: 2695
+        done read doP_4: 1 on MemoryChannel2
+        done read Identity_7: 24 on CoreVAClusterChannel
+        done write CrissCross_1: 1 on MemoryChannel2
+    CrissCross_1
+        wait read Xor_8: 13 on MemoryChannel2
+        wait read Identity_8: 50 on CoreVAClusterChannel
+        wait read CrissCross_1: 2330 on SimpleMergeSplitBuffer
+        wait write doIPm1_1: 20 on CoreVAClusterChannel
+        work: 2336
+        done read Xor_8: 1 on MemoryChannel2
+        done read Identity_8: 24 on CoreVAClusterChannel
+        done write doIPm1_1: 21 on CoreVAClusterChannel
+    BitstoInts_1
+        wait read doIPm1_1: 50 on CoreVAClusterChannel
+        wait write anonFilter1_1: 13 on MemoryChannel2
+        work: 2313
+        done read doIPm1_1: 24 on CoreVAClusterChannel
+        done write anonFilter1_1: 1 on MemoryChannel2
+    anonFilter1_1
+        wait read BitstoInts_1: 13 on MemoryChannel2
+        wait write FileWriter_9: 20 on CoreVAClusterChannel
+        work: 4450
+        done read BitstoInts_1: 1 on MemoryChannel2
+        done write FileWriter_9: 21 on CoreVAClusterChannel
+    total: 52482
+throughput: 68530 cycles/iteration (multiplicity 1, outputItems: 192, filters: 82) ..Debug: link bottlenect = 4617

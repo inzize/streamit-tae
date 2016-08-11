@@ -1,0 +1,74 @@
+void->void pipeline test2
+{
+	add input;
+	add splitjoin
+	{
+		split roundrobin(1, 2);
+		add splitjoin
+		{
+			split roundrobin(2, 3);
+			add A;
+			add B;
+			join roundrobin(2, 3);
+		}
+		add splitjoin
+		{
+			split roundrobin(4, 1);
+			add C;
+			add D;
+			join roundrobin(4, 1);
+		}
+		join roundrobin(1, 2);
+	}
+	add output;
+}
+
+void -> int stateful filter input
+{
+    int x = 0;
+	
+	work push 1
+	{
+		push(x++);
+	}
+}
+
+int -> int filter A
+{
+	work pop 1 push 1
+	{
+		push(pop());
+	}
+}
+
+int -> int filter B
+{
+	work pop 1 push 1
+	{
+		push(pop());
+	}
+}
+
+int -> int filter C
+{
+	work pop 1 push 1
+	{
+		push(pop());
+	}
+}
+
+int -> int filter D
+{
+	work pop 1 push 1
+	{
+		push(pop());
+	}
+}
+
+int -> void stateful filter output
+{
+	work pop 1
+	{
+		println(pop());
+	}
+}

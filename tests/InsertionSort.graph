@@ -1,0 +1,8 @@
+pipeline
+  filter 0 FileReader
+  pipeline
+    filter 1 JumpSort
+    filter 2 JumpSort
+    filter 3 JumpSort
+    filter 4 JumpSort
+  filter 5 FileWriter

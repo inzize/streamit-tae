@@ -1,0 +1,17 @@
+void->void pipeline FioExample
+{
+    add FileReader<int>("input.stream"); 
+	add Worker(2);	
+    add FileWriter<int>("output.stream"); 
+} 
+
+int->int filter Worker(int L)
+{
+	work pop L push L {
+		int val = 0;
+		for (int i=0; i<L; i++) {
+			val += pop();
+			push(val);
+		}
+	}
+}

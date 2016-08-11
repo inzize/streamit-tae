@@ -1,0 +1,3235 @@
+///// Transform.str /////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+/**
+ * @description
+ * This contains all the transform functions used in H.264 Baseline Profile
+ *
+ * Reference: 
+ * http://www.vcodex.com 
+ * H.264/MPEG-4 Part 10: Transform & Quantization
+ * 
+ * @author <a href="mailto:shirley.mit07@gmail.com">Shirley Fung</a>
+ * @file Transforms.str
+ * @version 1.0
+ */
+
+/**
+ * List of TODO
+ * - think about QStep, can be configured in Transforms() (as QStep increases,
+ *   so will the number of ZEROs that can be encoded, but increases error)
+ * - documentation
+ */
+
+/**
+ * FOR TESTING: top level stream
+ * 
+ */
+/*
+
+void->void pipeline TESTTransforms() {
+    
+    add Int2x2Source();
+    add Hadamard2x2();
+    add Hadamard2x2();
+    /////
+    //add Int4x4Source();
+    //add ForwardHadamard4x4();
+    //add InverseHadamard4x4();
+    add FactorizedCoreDCT4x4Transform();
+    //add Matrix4x4ToInt();
+    // refer to the QP/QStep table in reference documents
+    int QStep = 2; // QStep can also be a float, and adjusted 
+    // dynamically with each macroblock
+    
+    add Matrix4x4ToInt();
+    add splitjoin {
+	  split roundrobin(1,15);
+	  add pipeline {
+		add IntTo4x4Matrix();
+		add Hadamard4x4();
+		add Matrix4x4ToInt();
+	  }
+	  
+	  add Identity<int>;
+	  join roundrobin(1,15);
+    }
+    add IntTo4x4Matrix();
+    
+    add Factorized4x4Quantization(QStep);
+    
+    add Matrix4x4ToInt();
+    add splitjoin {
+	  split roundrobin(1,15);
+	  add pipeline {
+		add IntTo4x4Matrix();
+		add Hadamard4x4();
+		add Matrix4x4ToInt();
+	  }
+	  add Identity<int>;
+	  join roundrobin(1,15);
+    }
+    add IntTo4x4Matrix();
+
+    add Factorized4x4Rescale(QStep);
+    add FactorizedCoreInverseDCT4x4Transform();
+    
+    add Matrix4x4Printer();
+    //////
+    add Matrix2x2Printer();
+}
+
+*/
+//////////////////////////////////////////////////////
+// INTERNALS
+//////////////////////////////////////////////////////
+/*
+int->int[4][4] filter IntTo4x4Matrix() {
+    // 4x4 blocks are sent here in raster order
+    // following filter converts the int stream to an int[4][4] stream
+    work pop 16 push 1 {
+	  //println("int to 4x4 matrix");
+	 
+	  int[4][4] out;
+	  for (int row=0; row<4; row++) {
+		for (int col=0; col<4; col++) {
+		    out[row][col]=peek(row*4+col);
+		    //println("out: "+out[row][col]);
+		}
+	  }
+	  push(out);
+	  for (int j=0; j<16; j++) {
+		pop();
+	  }
+    }
+
+}
+
+
+int[4][4]->int filter Matrix4x4ToInt() {
+
+    work pop 1 push 16 {
+	  //println("matrix 4x4 to ints");
+	  int[4][4] in = peek(0);
+	  for (int row=0; row<4; row++) {
+		for (int col=0; col<4; col++) {
+		    push(in[row][col]);
+		    //println("in[row][col]: "+in[row][col]);
+		}
+	  }
+	  pop();
+    }
+}
+*/
+void->int[4][4] filter Int4x4Source() {
+    
+    int[4][4] test = {{1,2,3,4},
+			  {5,6,7,8},
+			  {9,10,11,12},
+			  {13,14,15,16}};
+    work push 1 {
+	  push(test);
+    }
+
+}
+void->int[2][2] filter Int2x2Source() {
+    
+    int[2][2] test = {{1,2},
+			    {5,6}};
+    work push 1 {
+	  push(test);
+    }
+
+}
+
+
+/**
+ * NOTES
+ * 3 pipelines:
+ * A: if macroblock block was in 16x16 luma, intra predicted
+ *    --> core_f transform -> Hadamard 4x4 on DC coeffs
+ * B: if its a chroma block
+ *    --> core_f transform -> Hadamard 2x2 on DC coeffs
+ * C: all other 4x4 blocks
+ *    --> core transform (core_f)?
+ *
+ * quantization matrix (to be integrated....)
+ * element by element scalar multiplication
+ *
+ */
+
+/**
+ * TEST RESULTS:
+ * 
+ * original block:
+ * {{-85,88,127,121},
+ * {-79,70,65,83},			  
+ * {-80,66,49,43},
+ * {-82,86,97,41}};
+ * 
+ * TQ'ed and inverse TQ'ed
+ * -87 89 130 119
+ * -80 72 67 81
+ * -81 65 48 44
+ * -79 84 93 45
+ *
+ * Error
+ * -2  1  3 -2
+ * -1  2  2 -2
+ * -1 -1 -1  1 
+ *  3 -2 -4  5
+ */
+
+/**
+ * Takes a 4x4 block and performs a 4x4 DCT approximation transform.
+ * This is a factorized version of the "core" transform.
+ * 
+ * 
+ * result = C [4x4 Block] CT
+ * 
+ *          |1  1  1  1|             |1  2  1  1| 
+ *          |2  1 -1 -2|             |1  1 -1 -2| 
+ * result = |1 -1 -1  1| [4x4 Block] |1 -1 -1  2| 
+ *          |1 -2  2 -1|             |1 -2  1 -1| 
+ * 
+ * where (x) denotes element multiplication
+ *
+ * The "core" transform is applied to ALL 4x4 blocks.
+ * 
+ * 
+ * @input 4x4 matrix to be transformed
+ * @output 4x4 matrix of result
+ */
+int[4][4]->int[4][4] filter FactorizedCoreDCT4x4Transform() {    
+
+    // test example
+    int[4][4] EX1 = {{5,11,8,10},
+			  {9,8,4,12},
+			  {1,10,11,4},
+			  {19,6,15,7}};
+
+    int[4][4] EX2 = {{-85,88,127,121},
+			  {-79,70,65,83},
+			  {-80,66,49,43},
+			  {-82,86,97,41}};
+
+    int[4][4] C = {{1, 1, 1, 1},
+			 {2, 1,-1,-2},
+			 {1,-1,-1, 1},
+			 {1,-2, 2,-1}};
+
+    int[4][4] CT = {{1, 2, 1, 1},
+			  {1, 1, -1,-2},
+			  {1,-1,-1, 2},
+			  {1,-2, 1,-1}};
+    
+    work pop 1 push 1 {
+	  
+	  int[4][4] product1;
+	  int[4][4] product2;
+	  int[4][4] input = peek(0);
+	  
+	  
+	  println("Factorized 4x4 DCT Core Transform");
+	  // first matrix multiplication
+	  println("product1");
+	  for (int r=0; r<4; r++) {
+		for (int c=0; c<4; c++) {
+		    int sumOfProducts = 0;
+		    //print(input[r][c]+" ");
+		    for (int i=0; i<4; i++) {
+			  //peek(0) = 4x4 block to be transformed
+			  //sumOfProducts += C[r][i]*EX2[i][c];
+			  
+			  sumOfProducts += C[r][i]*input[i][c];
+
+		    }
+		    product1[r][c] = sumOfProducts;
+		    print(sumOfProducts+" ");
+		}
+		println(" ");
+	  }
+
+	  pop();
+
+	  // second matrix multiplication
+	  println("product2");
+	  for (int r=0; r<4; r++) {
+		for (int c=0; c<4; c++) {
+		    int sumOfProducts = 0;
+		    for (int i=0; i<4; i++) {
+			  sumOfProducts += product1[r][i]*CT[i][c];
+		    }
+		    product2[r][c] = sumOfProducts;
+		    print(sumOfProducts+" ");
+		}
+		println(" ");
+	  }
+
+	  push(product2); 
+    }
+
+}
+
+/**
+ * NOTE: THIS IS USED IN CONJUNCTION WITH THE QUANTIZATION.
+ * 
+ * This algorithm here combines the scaling of the result from
+ * the 4x4 DCT approximation with quantization.
+ *
+ * The computation is specified below:
+ * 
+ * The result from FactorizedCoreDCT4x4Transform (x) PF
+ * where PF is... This gives the result from the 4x4 DCT.
+ *      |a^2   ab/2  a^2  ab/2|
+ *      |ab/2 b^2/4 ab/2 b^2/4|
+ * PF = |a^2   ab/2  a^2  ab/2|
+ *      |ab/2 b^2/4 ab/2 b^2/4| 
+ * 
+ * (x) denotes element scalar multiplication
+ * a = 1/2, b = sqrt(2/5)
+ *
+ * Quantization is then applied. The QP and QStep is arbitrarily
+ * chosen to be 10 and 2 respectively. Then, qbits is = 16.
+ * 
+ * The quantization operation is summarized here:
+ * 
+ * result = round( input(i,j) * PF(i,j) / QStep )
+ * 
+ * (algorithm that avoids division, not implemented here)
+ * result = round( input(i,j) * MF(i,j) >> qbits )
+ * where MF = PF * 2^qbits / QStep  (left/right shift can be used)
+ * 
+ * @param QStep value that defines step size of the quantization
+ * @input 4x4 block to be quantized after factorized core transform
+ * @output 4x4 block transformed and quantized (factorized approximation) 
+ */
+
+int[4][4]->int[4][4] filter Factorized4x4Quantization(int QStep) {
+    
+    //float[4][4] Q = {{0.25, 0.158113883, 0.25, 0.158113883},
+	//		   {0.158113883, 0.1, 0.158113883, 0.1},
+	//		   {0.25, 0.158113883, 0.25, 0.158113883},
+	//		   {0.158113883, 0.1, 0.158113883, 0.1}};
+	
+	// 2,30 fixed point presentation
+	int[4][4] Q_fixedPoint =  {{268435456, 169773489, 268435456, 169773489},
+			   {0.158113883, 107374182, 0.158113883, 107374182},
+			   {268435456, 169773489, 268435456, 169773489},
+			   {169773489, 107374182, 169773489, 107374182}};
+    
+    
+    work pop 1 push 1 {
+	  
+	  println("Factorized4x4Quantization");
+	  int[4][4] inputBlock = peek(0);
+	  int[4][4] result;
+	  for (int r=0; r<4; r++) {
+		for (int c=0; c<4; c++) {
+
+			//float f = inputBlock[r][c]*Q[r][c]/QStep;
+		    int f = inputBlock[r][c]*Q_fixedPoint[r][c]/QStep/16384;  //divided by 2 powered by 14 to get 16.16 fixed point presentation
+		    //float f = inputBlock[r][c]*Q[r][c]*32768;
+		    //f = f/65536;
+		    //print("inputBlock[r][c]: "+inputBlock[r][c]+" ");
+		    //print("Q[r][c]: "+Q[r][c]+" ");
+		    //print("f: "+f+" ");
+		    result[r][c] = (int) round(f);
+		    print(result[r][c]+" ");
+		}
+		println(" ");
+	  }
+	  
+	  pop();
+	  push(result);
+
+    }
+}
+
+int[4][4]->int[4][4] filter Factorized4x4Rescale(int QStep) {
+
+    //float[4][4] Q = {{0.25, 0.316227766, 0.25, 0.316227766},
+	//		   {0.316227766, 0.4, 0.158113883, 0.4},
+	//		   {0.25, 0.316227766, 0.25, 0.316227766},
+	//		   {0.316227766, 0.4, 0.316227766, 0.4}};
+			   
+	// 2,30 fixed point presentation
+	int[4][4] Q_fixedPoint =  {{268435456, 339546978, 268435456, 339546978},
+	//		   {339546978, 429296729, 169773489, 429296729},
+	//		   {268435456, 339546978, 268435456, 339546978},
+	//		   {339546978, 429296729, 339546978, 429296729}};
+
+    work pop 1 push 1 {
+	  
+	  println("Factorized4x4Rescale");
+	  int[4][4] inputBlock = peek(0);
+	  int[4][4] result;
+
+	  for (int r=0; r<4; r++) {
+		for (int c=0; c<4; c++) {
+		    //commented out due to loss of precision at this step
+			//float f = inputBlock[r][c]*Q[r][c]*QStep;
+		    int f = inputBlock[r][c]*Q[r][c]*QStep/16384; //divided by 2 powered by 14 to get 16.16 fixed point presentation
+		    result[r][c] = (int) round(f);
+		    print(result[r][c]+" ");
+		}
+		println(" ");
+	  }
+	  
+	  pop();
+	  push(result);
+
+    }
+
+}
+
+int[4][4]->int[4][4] filter FactorizedCoreInverseDCT4x4Transform() {    
+
+
+    //float[4][4] C = {{1, 1, 1,0.5},
+	//		 {1,0.5,-1,-1},
+	//		 {1,-0.5,-1, 1},
+	//		 {1,-1, 1,-0.5}};
+	int[4][4] C_fixedPoint = {{1073741824, 1073741824, 1073741824, 536870912},
+			 {1073741824, 536870912, -1073741824, -1073741824},
+			 {1073741824, -536870912, -1073741824, 1073741824},
+			 {1073741824, -1073741824, 1073741824, -536870912}};
+
+    //float[4][4] CT = {{1, 1, 1, 1},
+	//		  {1,0.5,-0.5,-1},
+	//		  {1,-1,-1, 1},
+	//		  {0.5,-1, 1,-0.5}};
+	int[4][4] CT_fixedPoint = {{1073741824, 1073741824, 1073741824, 1073741824},
+			  {1073741824, 536870912, -536870912, -1073741824},
+			  {1073741824, -1073741824, -1073741824, 1073741824},
+			  {536870912, -1073741824, 1073741824, -536870912}};
+    
+    work pop 1 push 1 {
+	  
+	  float[4][4] product1;
+	  int[4][4] product2;
+	  
+	  int[4][4] inputMatrix = peek(0);
+
+	  println("Factorized 4x4 Inverse DCT Core Transform");
+	  // first matrix multiplication
+	  println("product1");
+	  
+	  for (int r=0; r<4; r++) {
+		for (int c=0; c<4; c++) {
+		    //float sumOfProducts = 0;
+			int sumOfProducts = 0;
+		    for (int i=0; i<4; i++) {
+			  // peek(0) = 4x4 block to be transformed
+			  //sumOfProducts += C[r][i]*inputMatrix[i][c];
+			  sumOfProducts += C_fixedPoint[r][i]*inputMatrix[i][c]/16384; //divided by 2 powered by 14 to get 16.16 fixed point presentation
+			  //sumOfProducts += C[r][i]*EX[i][c];
+
+		    }
+		    product1[r][c] = sumOfProducts;
+		    print(sumOfProducts+" ");
+		}
+		println(" ");
+	  }
+
+	  pop();
+
+	  // second matrix multiplication
+	  println("product2");
+	  for (int r=0; r<4; r++) {
+		for (int c=0; c<4; c++) {
+		    float sumOfProducts = 0.0;
+		    for (int i=0; i<4; i++) {
+			  //sumOfProducts += product1[r][i]*CT[i][c];
+			  sumOfProducts += product1[r][i]*CT_fixedPoint[i][c]/16384; //divided by 2 powered by 14 to get 16.16 fixed point presentation
+		    }
+		    product2[r][c] = (int) round(sumOfProducts);
+		    print(product2[r][c]+" ");
+		}
+		println(" ");
+	  }
+
+	  push(product2); 
+    }
+
+}
+
+
+/**
+ * The Hadamard Transform is applied to 4x4 blocks that has been
+ * previously "core" transformed. Only 16x16 luma predicted macroblocks
+ * will use the Hadamard transform. The Hadamard Transform is symmetrical
+ * and therefore, it can be used for the inverse transform as well. Note 
+ * that the transform is performed on DC coefficients of 16 4x4 blocks
+ * within a macroblock.
+ * 
+ *     |1  1  1  1|
+ *     |1  1 -1 -1|
+ * H = |1 -1 -1  1| 
+ *     |1 -1  1 -1|
+ * 
+ * 
+ *
+ * @input 4x4 luma blocks previously "core" transformed
+ * @output 4x4 Hadamard transformed block
+ */
+int[4][4]->int[4][4] filter Hadamard4x4() {
+
+    int[4][4] H = {{1, 1, 1, 1},
+			 {1, 1,-1,-1},
+			 {1,-1,-1, 1},
+			 {1,-1, 1,-1}};
+
+    work pop 1 push 1 {
+
+	  int[4][4] product1;
+	  int[4][4] product2;
+	  
+	  int[4][4] inputMatrix = peek(0);
+	  println("Hadamard 4x4");
+	  
+	  // first matrix multiplication
+	  println("product1");
+	  for (int r=0; r<4; r++) {
+		for (int c=0; c<4; c++) {
+		    int sumOfProducts = 0;
+		    for (int i=0; i<4; i++) {
+			  // peek(0) = 4x4 block to be transformed
+			  sumOfProducts += H[r][i]*inputMatrix[i][c];
+
+		    }
+		    product1[r][c] = sumOfProducts/2;
+		    print(sumOfProducts+" ");
+		}
+		println(" ");
+	  }
+
+	  pop();
+	  
+	  // second matrix multiplication
+	  println("product2");
+	  for (int r=0; r<4; r++) {
+		for (int c=0; c<4; c++) {
+		    int sumOfProducts = 0;
+		    for (int i=0; i<4; i++) {
+			  sumOfProducts += product1[r][i]*H[i][c];
+		    }
+		    product2[r][c] = sumOfProducts/2;
+		    print(sumOfProducts+" ");
+		}
+		println(" ");
+	  }
+	  
+	  push(product2);
+    }
+    
+    
+}
+
+
+
+/**
+ * The Hadamard Transform is applied to 2x2 chroma blocks that has been
+ * previously "core" transformed. Only 4x4 chroma predicted macroblocks
+ * will use the Hadamard transform. The Hadamard Transform is symmetrical
+ * and therefore, it can be used for the inverse transform as well. Note
+ * that this is performed on the DC coefficients of the 8 4x4 chroma blocks
+ * within a macroblock.
+ * 
+ *     |1  1|
+ * H = |1 -1| 
+ * 
+ * @input 2x2 chroma blocks previously "core" transformed
+ * @output 2x2 Hadamard transformed block
+ */
+int[2][2]->int[2][2] filter Hadamard2x2() {
+
+    int[2][2] H = {{1, 1},
+			 {1,-1}};
+
+    work pop 1 push 1 {
+
+	  int[2][2] product1;
+	  int[2][2] product2;
+	  
+	  int[2][2] inputMatrix = peek(0);
+	  println("Hadamard 2x2");
+	  
+	  // first matrix multiplication
+	  println("product1");
+	  for (int r=0; r<2; r++) {
+		for (int c=0; c<2; c++) {
+		    int sumOfProducts = 0;
+		    for (int i=0; i<2; i++) {
+			  // peek(0) = 4x4 block to be transformed
+			  sumOfProducts += H[r][i]*inputMatrix[i][c];
+
+		    }
+		    product1[r][c] = sumOfProducts;
+		    print(sumOfProducts+" ");
+		}
+		println(" ");
+	  }
+
+	  pop();
+
+	  // second matrix multiplication
+	  println("product2");
+	  for (int r=0; r<2; r++) {
+		for (int c=0; c<2; c++) {
+		    int sumOfProducts = 0;
+		    for (int i=0; i<2; i++) {
+			  sumOfProducts += product1[r][i]*H[i][c];
+		    }
+		    product2[r][c] = sumOfProducts/2;
+		    print(sumOfProducts+" ");
+		}
+		println(" ");
+	  }
+
+	  push(product2);
+    }
+    
+    
+}
+
+
+int[4][4]->void filter Matrix4x4Printer() {
+    
+    work pop 1 {
+	  
+	  println("running matrix printer");
+	  for (int r=0; r<4; r++) {
+		for (int c=0; c<4; c++) {
+		    int[4][4] m = peek(0);
+		    print(m[r][c]+" ");
+		}
+		println(" ");
+	  }
+	  pop();
+    }
+}
+
+int[2][2]->void filter Matrix2x2Printer() {
+    
+    work pop 1 {
+	  
+	  println("running matrix printer");
+	  for (int r=0; r<2; r++) {
+		for (int c=0; c<2; c++) {
+		    int[2][2] m = peek(0);
+		    print(m[r][c]+" ");
+		}
+		println(" ");
+	  }
+	  pop();
+    }
+}
+
+
+
+
+
+/// VideoProcessor.str ////////////////////////////////////////////////////////////////////////////////////////////////////////////
+/**
+ * @description
+ * This contains all the filters required to rearrange pixel data from a
+ * YCbCr 4:2:0 file to macroblocks.
+ * 
+ * The specification for MPEG-4 (Part 10) used is the ITU-T H-Series 
+ * Recommendation for H.264.
+ * 
+ * @author <a href="mailto:shirley.mit07@gmail.com">Shirley Fung</a>
+ * @file VideoProcessor.str
+ * @version 1.0
+ */
+
+/** 
+ * List of TODOs
+ * none
+ * 
+ */
+
+/**
+ * What's going on here:
+ * 
+ * See version 1.46 for a standalone app for testing this component
+ * The current version now takes a Video and convert it to a Frame
+ * made up of macroblocks. This version is stable.
+ *
+ * The path to the YUV file has been hard coded in BitStream2IntStream
+ * 
+ */
+
+
+/**
+ * Interprets an input stream of successive frames of the original video in 
+ * raw data format, and produces a stream of frames (defined struct).
+ * @input VOID
+ * @output A stream of Frames (defined struct).
+ */
+void->Frame pipeline VideoProcessor(int width, int height) {
+	
+    // video parameters, are specified here right now, but
+    // this will have to move to the main pipeline once this
+    // part has been tested
+    // int width = 352;
+    // int height = 288;
+    // int numPictures = 300; 
+
+	
+
+    // comment out for testing
+    add FileReader<bit> ("mobile.cif");
+    add BitStream2IntStream();
+	
+    // for testing macroblockmaker and framebuilder
+    // add FakeVideoIntsGenerator();
+    
+    add MacroblockMaker(width, height);
+    add FrameBuilder(width, height);
+     
+    // for testing only
+    //add FramePrinter(width, height); 
+
+}
+
+
+/* ********************************************************
+ * STRUCTS FOR VARIOUS DATA TYPES
+ * *********************************************************/
+
+
+
+/**
+ * This is the container for a macroblock, used for 4:2:0 sampling scheme.
+ * It may be modified easily for a different sampling scheme.
+ *
+ * @YSamples 16x16 luma samples block
+ * @CbSamples 8x8 blue chroma samples block
+ * @CrSamples 8x8 red chroma samples block
+ */
+struct Macroblock {
+	// For clarification, first number will index the row
+	// and second number will index the column
+    int[16][16] YSamples;
+    int[8][8] CbSamples;
+    int[8][8] CrSamples;
+}
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+/**
+ * This is the container for a frame, using 4:2:0 sampling scheme.
+ * It may be modified easily for a different sampling scheme.
+ * 
+ * Note that in the StreamIt Language Specification 2.1, user initiated 
+ * parameterized types is listed as a future extension.
+ * 
+ * @param numOfMacroblocks number of macroblocks in a frame is needed 
+ * 						   to size the array for the frame
+ * 						   DEPRECATED, NO PARAMETERIZABLE STRUCTS
+ * 
+ * @frameNumber used for temporal reference
+ * @sliceType labeling of I, P,or B slice types
+ * @macroblock samples coded using 4:2:0 scheme
+ */
+struct Frame {
+      
+    int frameNumber;
+    int sliceType;
+    // QCIF 22w x 16h blocks
+    // For clarification, first number will index the row
+    // and second number will index the column
+    //Macroblock[18][22] macroblocks;
+	int[16][16] m_YSamples;
+    int[8][8] m_CbSamples;
+    int[8][8] m_CrSamples;
+}
+
+
+
+/** 
+ * Converts a byte stream into a sequence of integers. A byte represents a value.
+ * 
+ * Works with unsigned byte representation only, and currently expect that 
+ * peek(0) reads the most significant bit in the byte.
+ * 
+ * @input 8 bits representing bit data to be translated to integers
+ * @output An integer stream equivalent to the original 8 bits.
+ */
+bit->int filter BitStream2IntStream() {
+	
+    work pop 8 push 1 {
+    
+	  int some_int = 0;
+	  // perhaps the 2 powers should be initialized 
+	  // to avoid computing it every time the filter iterates
+	  int two_power = 1;
+	  //println("Running BitStream2IntStream...");
+	  for (int i = 0; i < 8; i++) {
+	  	// big endian, peek(0) of the byte is the most sig bit
+	      int ZeroOrOne = (int) peek(7-i);
+    	      int add_int = ZeroOrOne * two_power;
+     		two_power = two_power * 2;
+     		some_int += add_int;
+     		//print(peek(7-i));
+	  }
+		//println("now to int value");
+		//print(some_int);
+
+		// pop all
+		for (int i=0; i<8; i++) {
+		    pop();
+		}
+	
+		push(some_int);
+	
+    }
+}
+
+/**
+ * Interprets an input stream of successive frames of the original video in 
+ * raw data format, and produces a stream of macroblock (defined struct). The input
+ * format is I420 (see http://www.fourcc.org/)
+ * @param width The resolution width of the video.
+ * @param height The resolution height of the video.
+ * @input A series of images representing the frames of the video. 
+ * 		  Each picture frame is coded in YCbCr 4:2:0 planar format.
+ * 		  Therefore, Y, Cb, Cr are stored in separate arrays.
+ * @output A stream of macroblocks (struct).
+ */
+int->Macroblock pipeline MacroblockMaker(int width, int height) {	
+    
+    add splitjoin {		
+	  // split inputs into planes;
+	    
+	  int numOfYValues = width*height;
+	  int numOfCbCrValues = (int) width*height/4; // 4:2:0 downsampling scheme
+	  int numOfValuesInFrame = numOfYValues + 2*numOfCbCrValues;		
+		
+	  split roundrobin(numOfYValues, numOfCbCrValues, numOfCbCrValues);
+	
+		
+	  int numOfHBlocks = (int) (width/16);
+	  // reorganizes Y values
+	  add splitjoin {
+	    	split roundrobin(16);
+	    	for (int i=0; i<numOfHBlocks; i++) {
+	    	    add Identity<int>;
+	    	}
+		join roundrobin(256);
+	  }
+	
+	  // reorganizes Cb values
+	  add splitjoin {
+	      split roundrobin(8);
+	      for (int i=0; i<numOfHBlocks; i++) {
+		    add Identity<int>;
+		}
+		join roundrobin(64);
+	  }
+	
+	  // reorganizes Cr values
+	  add splitjoin {
+		split roundrobin(8);
+		for (int i=0; i<numOfHBlocks; i++) {
+		    add Identity<int>;
+		}
+		join roundrobin(64);
+	  }
+		
+	  // collects all samples for a 16x16 macroblock
+	  join roundrobin(256,64,64); 
+	  // 4:2:0 downsampling scheme for a macroblock
+	  // at this point, 256+64+64 pixels represent a set of 
+	  // YCbCr values for a macroblock
+	  // 256+64+64 = 384
+    }
+    
+    add int->Macroblock filter {
+	  
+	  
+	  
+	  // stuff 384 values into a macroblock
+	  work pop 384 push 1 {
+		
+		// at each iteration of the work function, 
+		// it will work on the macroblocks, in raster order
+		//println("Stuffing values into a Macroblock");
+		Macroblock newMacroblock;
+		
+		int pixelCount=0;
+		
+		// stuff Y values into a macroblock struct;
+		for (int row=0; row<16; row++) {
+		    for (int col=0; col<16; col++) {
+			  newMacroblock.YSamples[row][col] = peek(pixelCount);
+			  pixelCount++;
+		    }
+		}
+		
+		// stuff Cb values 
+		for (int row=0; row<8; row++) {
+		    for (int col=0; col<8; col++) {
+			  newMacroblock.CbSamples[row][col] = peek(pixelCount);
+			  pixelCount++;
+		    } 
+		}
+		
+		
+		for (int row=0; row<8; row++) {
+		    for (int col=0; col<8; col++) {
+			  newMacroblock.CrSamples[row][col] = peek(pixelCount);
+			  pixelCount++;
+		    }
+		}
+		
+		
+		push(newMacroblock);
+		
+		// pop all
+		for (int i=0; i<384; i++) {
+		    pop();
+		}
+		
+	  }	
+    }
+}
+
+/**
+ * It takes a series of macroblocks in raster sequence and build a frame.
+ * @param width The resolution width of the video.
+ * @param height The resolution height of the video.
+ * @input A series of macroblocks (see struct) 		  
+ * @output A stream of frames (struct) of the orignal video.
+ */
+Macroblock->Frame filter FrameBuilder(int width, int height) {
+	
+      
+	
+    int numOfHBlocks;
+    int numOfVBlocks;
+    int numOfMacroblocks;
+    int frameCount;
+    Frame newFrame;
+	
+    // taking this out for now
+    init {
+	  
+	  numOfHBlocks = (int) (width/16); 
+	  // number of macroblocks in the horizontal direction
+	  numOfVBlocks = (int) (height/16); 
+	  // number of macroblocks in the vertical direction
+	  numOfMacroblocks = (int) (width/16)*(height/16); 
+	  // number of macroblocks in a frame
+	  frameCount = 0;	
+	  
+    }
+    
+    // work pop numOfMacroblocks push 1 {
+    work pop (width/16)*(height/16) push 1 {
+	  
+	  //println("Running FrameBuilder...");
+	  //Frame newFrame;                                                                                                               
+	  for (int row=0; row<numOfVBlocks; row++) {
+		
+		for (int col=0; col<numOfHBlocks; col++) {
+		    //println(row+" "+col+" "+(row*numOfHBlocks+col)+" ");
+		    newFrame.macroblocks[row][col] = peek(row*numOfHBlocks+col);
+		    
+		}
+	  }
+	  
+	  newFrame.frameNumber = frameCount;
+	  frameCount++;
+	  push(newFrame);
+	  
+	  // pop all
+	  for (int i=0; i<numOfMacroblocks; i++) {
+		pop();
+	  }
+	  
+	  
+    }
+    
+}
+
+
+
+
+/**********************************************************
+ * FOR TESTING PURPOSES
+/**********************************************************/
+
+/**
+ * This is a source of integers
+ */
+
+void->int filter FakeVideoIntsGenerator() {
+	
+    int x = 0;
+    
+    work push 1 {
+	  
+	  push(x++);
+	  
+    }
+}	
+
+/**
+ * This is made to print frames nicely in the console to verify
+ * this all works.
+ */
+Frame->void filter FramePrinter(int width, int height) {
+    
+    
+    int numOfHBlocks;
+    int numOfVBlocks;
+    
+    init {
+	  
+	  numOfHBlocks = (int) (width/16); 
+	  // number of macroblocks in the horizontal direction
+	  numOfVBlocks = (int) (height/16); 
+	  // number of macroblocks in the vertical direction
+	  
+    }
+    work pop 1 {
+	  
+	  Frame currentFrame = peek(0);
+	  
+	  println(" ");
+	  print("Frame ");
+	  print(currentFrame.frameNumber);
+	  println(" ");
+	  
+	  for (int row=0; row<numOfVBlocks; row++) {
+		for (int col=0; col<numOfVBlocks; col++) {
+		    
+		    Macroblock mBlock = currentFrame.macroblocks[row][col];
+		    println("printing macroblock: row-"+row+", col-"+col);
+		    
+		    println("Y Samples");
+		    for (int r=0; r<16; r++) {
+			  for (int c=0; c<16; c++) {
+				print(mBlock.YSamples[r][c]+" ");
+			  }
+			  println(" ");
+		    }
+		    
+		    println("Cb Samples");
+		    for (int r=0; r<8; r++) {
+			  for (int c=0; c<8; c++) {
+				print(mBlock.CbSamples[r][c]+" ");
+			  }
+			  println(" ");
+		    }
+		    
+		    println("Cr Samples");
+		    for (int r=0; r<8; r++) {
+			  for (int c=0; c<8; c++) {
+				print(mBlock.CrSamples[r][c]+" ");
+			  }
+			  println(" ");
+		    }
+		    
+		    println(" ");
+		}
+	  }
+	  pop();	
+    }
+	
+}
+
+
+
+/// PredictionModes16x16Luma.str ///////////////////////////////////////////////////////////////////////////////////////
+/*
+ * [Shirley]
+ * This file contains the various functions for generating the 4
+ * prediction modes for a 16x16 luma intra prediction block. 
+ *
+ * This is new to MPEG-2
+ *  
+ * Note that all prediction modes can be calculated independently
+ * of each other and therefore can be parallelized.
+ * 
+ * Reference: http://www.rgu.ac.uk/files/h264_intrapred.pdf
+ */
+
+/**
+ * @description
+ * This file contains various functions that takes in a total of 
+ * 289 pixels, The original 16x16 block, Upper Left Corner, 
+ * 16 'H'orizontal and 16 'V'ertical pixels on the top
+ * and left side of the prediction block.
+ * 
+ * Various functions calculate all 4 prediction modes such that the 
+ * best one can be used for a 16x16 luminance block. Not all modes will 
+ * require all 32 pixels. These filters will assume the input will give 
+ * luminance values 'H' and 'V' and 'X' an output that is
+ * denoted by numbers, in the order below (not in zig-zag).
+ * 
+ * The series of luminance values for 'H' is an array of length 16,
+ * representing the values from left to right. Indexed from 0 - 15.
+ * The series of luminance values for 'V' is an array of length 16,
+ * representing the values from top to bottom. Indexed from 0 - 15.
+ * 
+ * X H H H H H H H H H H H H H H H H 
+ * V 0 1 2 3 4 5 6 7 8 9 .......
+ * V
+ * V
+ * V
+ * V
+ * V
+ * V
+ * V
+ * V
+ * V
+ * V
+ * V
+ * V
+ * V
+ * V
+ * V ............................. 256
+ * 
+ * 
+ * The number represents the order of output for the prediction block.
+ * 
+ * The cost function is the residual between the original block
+ * and the predicted block. The encoder will choose the prediction
+ * mode that minimizes the residual.
+ * 
+ * PREDICTION MODES
+ * 0 - Vertical
+ * 1 - Horizontal
+ * 2 - DC
+ * 3 - Plane
+ *
+ * Assumption: all H and V pixels are available.
+ *
+ * @author <a href="mailto:shirley.mit07@gmail.com">Shirley Fung</a>
+ * @file PredictionModes16x16Luma.str
+ * @version 1.0
+ */
+
+/**
+ * TOP LEVEL STREAM
+ */
+/*
+void->void pipeline PredictionModes16x16Luma() {
+    add FakeBlockHVXGenerator(); 
+ 
+    add splitjoin {
+	  split duplicate;
+	  add Prediction16x16Mode0AndSAE();
+	  add Prediction16x16Mode1AndSAE();
+	  add Prediction16x16Mode2AndSAE();
+	  add Prediction16x16Mode3AndSAE();
+	  join roundrobin(290);
+    }
+
+
+    add FindBestPredictionMode16x16();
+    add PredictionResultPrinter();
+}
+*/
+void->int filter FakeBlockHVXGenerator() {
+    work push 289 {
+
+	  int pushVal = 0;
+	  
+	  for (int row=0; row<16; row++) {
+		for (int col=0; col<16; col++) {
+		    
+		    if (row < 8 && col < 8) {
+			  pushVal = 3;
+		    } else if (row < 8 && col >= 8) {
+			  pushVal = 5;
+		    } else if (row >= 8 && col < 8) {
+			  pushVal = 5;
+		    } else {
+			  pushVal = 3;
+		    }
+		    
+		    push(pushVal);
+		    print(pushVal+" ");
+		}
+		println(" ");
+	  }
+
+	  print("H: ");
+	  for (int x=0; x<16; x++) {
+		push(40);
+		print(40);
+	  }
+	  println(" ");
+
+	  print("V: ");
+
+	  for (int y=0; y<16; y++) {
+		push(4);
+		print(4);
+	  }
+	  
+	  println(" ");
+	  
+	  push(5);
+    }
+}
+
+int->int filter PredictionResultPrinter() {
+    work pop 290 push 290{
+	  
+	  println("prediction results, residual");
+
+	  for (int row=0; row<16; row++) {
+		for (int col=0; col<16; col++) {
+		    print(peek(row*16+col)+" ");
+		}
+		println(" ");
+	  }
+
+	  println("best mode "+peek(256));
+	  
+	  println("original HVX");
+	  for (int i=257; i<290; i++) {
+		print(peek(i)+" ");
+	  }
+	  // push all
+	  for (int i=0; i<290; i++) {
+		push(peek(i));
+	  } 
+	  // pop all
+	  for (int i=0; i<290; i++) {
+		pop();
+	  }  
+    }
+	  
+}
+	  
+/**
+ * This filter gathers all the sum of absolute errors from 
+ * all the prediction modes, and find the mininum - then output
+ * the prediction mode. 
+ * 
+ * @input stream of 16x16 residual values + "sum of absolute errors" 
+ *        (mode0 to mode3 in order) + original HVX
+ * @output One 16x16 residual block + recommended 16x16 luma prediction mode 
+ *         (possible: 0 to 3) + HVX
+ */
+int->int filter FindBestPredictionMode16x16() {
+    
+    // (256 + 1 + 16 + 16 + 1)*4 = 1160 (input)
+    // 256 + 1 + 16 + 16 = 290 (ouput)
+    work pop 1160 push 290 {
+
+	  println("FindBestPredictionMode16x16");
+
+	  int currentMinSAE = peek(256); 
+	  int minPredictionMode = 0;
+
+	  for (int i=1; i<=3; i++) {
+		// if SAE is the same for 2 or more modes, 
+		// mode 0 is default
+		//256*(i+1) + 33i + 1i = 290i + 256
+		int sae = peek(290*i+256);
+		if (currentMinSAE > sae) {
+		    // found new min
+		    minPredictionMode = i;
+		    currentMinSAE = sae;
+		    
+		} 
+		
+		println("current minPredictionMode "+minPredictionMode);
+		println("current SAE "+sae);
+		println("current min SAE "+currentMinSAE);
+	  }
+	  // if mode x, residual values are at......
+	  // 0: peek(0-255)
+	  // 1: peek(257-512)
+	  // 2: peek(514-769)
+	  // 3: peek(771-1026)
+	  
+	  int start = minPredictionMode*290;
+	  
+	  for (int i=start; i<start+290; i++) {
+		if (i != start + 256) { // no point in pushing the min sae
+		    push(peek(i));
+		} else {
+		    push(minPredictionMode);
+		}
+
+	  }
+		
+
+	  // pop all
+	  for (int i=0; i<=1159; i++) {
+		pop();
+	  }  
+    }
+}
+
+//////////////////////////////////////////////
+//PREDICTION MODE 0                         //
+//////////////////////////////////////////////
+
+/**
+ * This function calculates prediction mode 0 for a 16x16 luminance
+ * block. Note that only the 'H'orizontal pixels is required.
+ * 
+ * VERTICAL MODE
+ * 
+ * @input A stream of 256 original pixels + 'H' + 'V' + 'X'
+ * @output A stream of 256 residual values + sum of absolute errors + H + V + X
+ */
+int->int filter Prediction16x16Mode0AndSAE() {
+    // original block         peek(0-255)
+    // 'H'                    peek(256-271);
+    // 'V'				peek(272,287)
+    // 'X'                    peek(288)
+    work pop 289 push 290 {
+	  
+	  println("Prediction16x16Mode0AndSAE");
+	  int sae = 0; // sum of absolute errors
+	  for (int row=0; row<16; row++) {
+		for (int col=0; col<16; col++) {
+		    int residual = peek(row*16+col) - peek(256+col);
+		    sae += (int)abs(residual);
+		    push(residual);
+		    print(residual+" ");
+		    //print(sae+" ");
+		}
+		println(" ");
+	  }
+	  push(sae);
+	  
+	  // pass HVX
+	  for (int i=256; i<=288; i++) {
+		push(peek(i));
+	  }
+	  
+	  for (int i=0; i<=288; i++) {
+		pop();
+	  }
+    }	
+}
+
+//////////////////////////////////////////////
+//PREDICTION MODE 1                         //
+//////////////////////////////////////////////
+
+
+/**
+ * This function calculates prediction mode 1 for a 16x16 luminance
+ * block. Note that only the 'V'ertical pixels is required.
+ * 
+ * HORIZONTAL MODE
+ * 
+ * @input A stream of 256 original pixels + 'H' + 'V' + 'X'
+ * @output A stream of 256 residual values + sum of absolute errors + HVX
+ */
+int->int filter Prediction16x16Mode1AndSAE() {
+    // original block         peek(0-255)
+    // 'H'                    peek(256-271);
+    // 'V'				peek(272,287)
+    // 'X'                    peek(288)
+    work pop 289 push 290 {
+	  println("Prediction16x16Mode1AndSAE");
+	  int sae = 0; // sum of absolute errors
+	  for (int row=0; row<16; row++) {
+		for (int col=0; col<16; col++) {
+		    int residual = peek(row*16+col) - peek(272+col);
+		    sae += (int)abs(residual);
+		    push(residual);
+		    print(residual+" ");
+		    //print(sae+" ");
+		}
+		println(" ");
+	  }
+	  push(sae);
+
+	  // pass HVX
+	  for (int i=256; i<=288; i++) {
+		push(peek(i));
+	  }
+	  
+	  for (int i=0; i<=288; i++) {
+		pop();
+	  }
+    }	
+}
+
+/**
+ * This function calculates prediction mode 2 for a 16x16 luminance
+ * block. Note that both 'H'orizontal and 'V'ertical pixels 
+ * are required
+ *
+ * DC MODE (SEE EQUATION 8-114) IN SPEC
+ *
+ * NOTE:
+ * This is incomplete since it does not take care of cases where
+ * some of the H and V samples are not available.
+ * 
+ * @input A stream of 256 original pixels + 'H' + 'V' + 'X'
+ * @output A stream of 256 residual values + sum of absolute errors + HVX
+ */
+int->int filter Prediction16x16Mode2AndSAE() {                                                                                                                              	
+    // original block         peek(0-255)
+    // 'H'                    peek(256-271);
+    // 'V'				peek(272,287)
+    // 'X'                    peek(288)
+    work pop 289 push 290 {
+	  
+
+	  // note that this implementation is incomplete
+	  // if H pixels are unavailable, average is only taken with V
+	  // if V pixels are unavailable, average is only taken with H
+	  // this implementation here assumes both H and V are available
+	  println("Prediction16x16Mode2AndSAE");
+	  int DC = 16;
+	  for (int hv=256; hv<=287; hv++) {
+		DC += peek(hv);
+	  }
+	  int DCAvg = (int) round(DC>>5);
+	  
+	  int sae = 0; // sum of absolute errors
+	  for (int row=0; row<16; row++) {
+		for (int col=0; col<16; col++) {
+		    int residual = peek(row*16+col) - DCAvg;       ;
+		    sae += (int)abs(residual);
+		    push(residual);
+		    print(residual+" ");
+		    //print(sae+" ");
+		}
+		println(" ");
+	  }
+	  push(sae);
+	  
+	  // pass HVX
+	  for (int i=256; i<=288; i++) {
+		push(peek(i));
+	  }
+	  for (int i=0; i<=288; i++) {
+		pop();
+	  }
+    }	
+}
+
+/**
+ * This function calculates prediction mode 3 for a 16x16 luminance
+ * block. Note that both 'H'orizontal and 'V'ertical pixels 
+ * are required.
+ *
+ * ITU specification: 8.3.3.4
+ * 
+ * @input A stream of 256 original pixels + 'H' + 'V' + 'X'
+ * @output A stream of 256 residual values + sum of absolute errors + HVX
+ */
+int->int filter Prediction16x16Mode3AndSAE() {
+    
+    // original block         peek(0-255)
+    // 'H'                    peek(256-271);
+    // 'V'				peek(272,287)
+    // 'X'                    peek(288)
+    work pop 289 push 290 {
+
+	  println("Prediction16x16Mode3AndSAE");
+	  // a = 16 * (p[-1,15]+p[15,-1]) = 16 * (V[15]+H[15])
+	  int a = 16*(peek(287)+peek(271));
+
+
+	  // H = sum((x+1)*(H[8+x]-H[6-x]))
+	  // case where x = 7
+	  // 8*(H[15]-H[-1]); H[-1] = 'X'
+	  int H = 8*(peek(271)-peek(288)); 
+	  for (int x=0; x<=6; x++) {
+		// H += (x+1)*(peek(256+8+x)-peek(256+6-x));
+		H += (x+1)*(peek(264+x)-peek(262-x));
+	  }
+	  
+	  
+	  // V = sum((y+1)*(V[8+y]-V[6-y]))
+	  // case where y = 7
+	  // 8*(V[15]-V[-1]); V[-1] = 'X'
+	  int V = 8*(peek(287)-peek(288)); 
+	  for (int y=0; y<=6; y++) {
+		// V += (y+1)*(peek(272+8+y)-peek(272+6-y));
+		V += (y+1)*(peek(280+y)-peek(278-y));
+	  }
+
+	  int b = (5*H+32)>>6;
+	  int c = (5*V+32)>>6;
+	  
+	  int sae = 0;
+
+ 	  for (int row=0; row<16; row++) {
+		
+		for (int col=0; col<16; col++) {
+		    
+		    // clipping
+		    int predicted = (a + b*(col-7) + c*(row-7) + 16) >> 5;
+		    if (predicted < 0) {
+			  predicted = 0;
+		    } else if (predicted > 255) {
+			  predicted = 255;
+		    } else {
+			  // do nothing;
+		    }
+		    int residual = peek(row*16+col) - predicted;
+		    sae += (int)abs(residual);
+		    push(residual);
+		    print(residual+" ");
+		    //print(sae+" ");
+		}
+		
+		println(" ");
+	  }	  
+	  push(sae);
+
+	  // pass HVX
+	  for (int i=256; i<=288; i++) {
+		push(peek(i));
+	  }
+	  
+	  for (int i=0; i<=288; i++) {
+		pop();
+	  }
+    } 
+}
+
+/////////////////////////////////////////////////
+// RECONSTRUCTION for INTRA PREDICTION
+/////////////////////////////////////////////////
+
+
+/**
+ * This filter takes 256 residual pixels, previously inverse transformed
+ * and inverse quantized, followed by the intra prediction mode (1),
+ * and HVX (33) pixels, will generate the HVX pixels of the reconstructed block.
+ *
+ * H = lower edge pixels (contains X)
+ * V = right edge pixels (contains X)
+ * X = lower right corner (already in H and V)
+ *
+ * Residual values are sent in raster scan order within a 16x16 macroblock.
+ * These blocks are predicted in 16x16 Luma Intra Prediction Mode. 
+ * 
+ * @input 256 residual values + mode (1) + HVX (33) values
+ * @output reconstructed HVX pixels (order: H, V, X)
+ */
+int->int filter Reconstruct16x16LumaIntraPredFromHVX() {
+    
+    work pop 290 push 33 {
+	  
+	  // H residuals (bottom edge): peek(240->255);
+	  // V residuals (right edge): peek(15+i*16); // i = [0,1,2,...15]
+
+	  // mode: peek(256)
+	  // H: peek(257->272)
+	  // V: peek(273->288)
+	  // X: peek(289)
+	  
+	  // check mode
+	  int mode = peek(256);
+	  if (mode == 0) { // VERTICAL
+		// push H's, bottom edge
+		for (int i=0; i<16; i++) {
+		    int predicted = peek(257+i);
+		    int residual = peek(240+i);
+		    push(predicted + residual);
+		}
+		// push V's, right edge
+		int predicted = peek(272);
+		for (int i=0; i<16; i++) {
+		    int residual = peek(15+i*16);
+		    push(predicted + residual);
+		    if (i == 15) {
+			  push(predicted + residual); // X
+		    }
+		}
+		
+	  } else if (mode == 1) { // HORIZONTAL
+		// push H's, bottom edge
+		int predicted = peek(288);
+		for (int i=0; i<16; i++) {
+		    int residual = peek(240+i);
+		    push(predicted + residual);
+		}
+		// push V's, right edge
+		for (int i=0; i<16; i++) {
+		    predicted = peek(273+i);
+		    int residual = peek(15+i*16);
+		    push(predicted + residual);
+		    if (i == 15) {
+			  push(predicted + residual); // X
+		    }
+		}
+		
+	  } else if (mode == 2) { // DC
+		int DC = 16;
+		for (int hv=257; hv<=288; hv++) {
+		    DC += peek(hv);
+		}
+		int predicted = (int) round(DC>>5); // DC Avg
+		
+		// push H's, bottom edge
+		for (int i=0; i<16; i++) {
+		    int residual = peek(240+i);
+		    push(predicted + residual);
+		}
+		// push V's, right edge
+		for (int i=0; i<16; i++) {
+		    int residual = peek(15+i*16);
+		    push(predicted + residual);
+		    if (i == 15) {
+			  push(predicted + residual); // X
+		    }
+		}
+		
+		
+	  } else if (mode == 3) { // PLANE
+		// reminder
+		// H residuals (bottom edge): peek(240->255);
+		// V residuals (right edge): peek(15+i*16); // i = [0,1,2,...15]
+		
+		// mode: peek(256)
+		// H: peek(257->272)
+		// V: peek(273->288)
+		// X: peek(289)
+		// a = 16 * (p[-1,15]+p[15,-1]) = 16 * (V[15]+H[15])
+		int a = 16*(peek(288)+peek(272));
+
+		
+		// H = sum((x+1)*(H[8+x]-H[6-x]))
+		// case where x = 7
+		// 8*(H[15]-H[-1]); H[-1] = 'X'
+		int H = 8*(peek(272)-peek(289)); 
+		for (int x=0; x<=6; x++) {
+		    // H += (x+1)*(peek(257+8+x)-peek(257+6-x));
+		    H += (x+1)*(peek(265+x)-peek(263-x));
+		}
+		
+		
+		// V = sum((y+1)*(V[8+y]-V[6-y]))
+		// case where y = 7
+		// 8*(V[15]-V[-1]); V[-1] = 'X'
+		int V = 8*(peek(288)-peek(289)) ; 
+		for (int y=0; y<=6; y++) {
+		    // V += (y+1)*(peek(273+8+y)-peek(273+6-y));
+		    V += (y+1)*(peek(281+y)-peek(279-y));
+		}
+		
+		int b = (5*H+32)>>6;
+		int c = (5*V+32)>>6;
+		
+		// push H's, bottom edge
+		for (int row=0; row<16; row++) {
+		    int col = 15; // fixed to right edge
+		    int residual = peek(240+row); 
+		    // row iterates column position here
+	   
+		    // clipping
+		    int predicted = (a + b*(col-7) + c*(row-7) + 16) >> 5;
+		    if (predicted < 0) {
+			  predicted = 0;
+		    } else if (predicted > 255) {
+			  predicted = 255;
+		    } else {
+			  // do nothing;
+		    }
+		    push(predicted + residual);
+		   
+		}
+		// push V's, right edge
+		for (int col=0; col<16; col++) {
+		    int row = 15; // fixed to bottom edge
+		    int residual = peek(15+col*16); 
+		    // col iterates row position here
+	   
+		    // clipping
+		    int predicted = (a + b*(col-7) + c*(row-7) + 16) >> 5;
+		    if (predicted < 0) {
+			  predicted = 0;
+		    } else if (predicted > 255) {
+			  predicted = 255;
+		    } else {
+			  // do nothing;
+		    }
+		    push(predicted + residual);
+		    if (col == 15) { // push X
+			  push (predicted + residual);
+		    }
+		}
+		
+		
+	  } else {
+		println("This macroblock has an invalid mode");
+	  }
+	  
+	  for (int i=0; i<290; i++) {
+		pop();
+	  }
+    }
+
+}
+
+
+/// IntraPrediction.str ///////////////////////////////////////////////////////////////////////////////////////////////////////
+/**
+ * @description
+ * This contains the StreamIt graph design for intraprediction used in 
+ * H.264.
+ *
+ * Reference: 
+ * http://www.vcodex.com 
+ * H.264/MPEG-4 Part 10: Intra Prediction
+ * 
+ * @author <a href="mailto:shirley.mit07@gmail.com">Shirley Fung</a>
+ * @file IntraPrediction.str
+ * @version 1.0
+ */
+
+/**
+ * List of TODOS
+ * - Clean up code for intra prediction
+ * - do Quantization
+ * 
+ */
+
+
+
+/**
+ * What's happening here:
+ * The goal for now is to implement the process for doing 16x16 intraprediction,
+ * and not have th4 4x4 intraprediction yet. The goal is to have both processes
+ * go on at the same time, and the decision between 16x16 or 4x4 will be made 
+ * after T/Q where the block with more zeros wins.
+ */
+
+/**
+ * Top level stream
+ */
+void->void pipeline IntraPrediction() {
+    int width = 352;
+    int height = 288;
+    add IntStream();
+    //add IntTo4x4Matrix();
+    //add Matrix4x4ToInt();
+    //add PrintInts();
+    //add LumaIntraPred16x16AndTQ(10);
+    add Luma16x16IntraPrediction16x16(width, height);
+    add PrintMBlockIntsResult();
+    
+}
+
+/**
+ * This is the main feedback structure of the 16x16 intra prediction stage. A 
+ * feedback loop design was chosen because of the fact that each predicted
+ * block must work from previously encoded and decoded samples. When a block
+ * is encoded and decoded.
+ * 
+ * Since intraprediction of a frame involves transform/quantization, it is grouped
+ * in this stage, and in the end, the output will be the transformed and 
+ * quantized macroblock along with its prediction mode.
+ *
+ * @input 256 (16x16) luma values (raster) of a macroblock (macroblocks are in 
+ *        raster scan order as it comes in)
+ * @output 256 luma values, transformed and quantized, followed by the prediction
+ *         mode chosen
+ */
+
+int->int feedbackloop Luma16x16IntraPrediction16x16(int width, int height) { 
+    
+    // 256 pixel values from original 16x16 block
+    // 16+16+1 pixel values of H, V, and X used for predicting the current block
+    // H = top horizontal pixels; V = left side vertical pixels
+    // X = top left pixel
+    join roundrobin(256, 33);
+    
+    int QStep = 10;
+    
+    body LumaIntraPred16x16AndTQ(QStep); 
+    // pipeline that does prediction, T and Q
+    
+    loop QTAndHVX(width, height, QStep); 
+    // pipeline that does Q, T, and delays side and top pixels to send back
+    split duplicate;
+    // output 256 transformed and quantized ints + HVX + mode
+    // stream going back to loop will have 
+    for (int i=0; i<0; i++) {
+	  enqueue(-1);
+    }
+    // enqueue???
+    
+}
+
+/**
+ * This pipeline has the prediction stage and the transform and quantization stage.
+ * It is part of the forward filter of the feedback loop.
+ *
+ * @input 16x16 original block = 256 pixels + HVX Pixels (16x2 + 1) = 289
+ * @output transformed and quantized block with mode used + HVX = 256 + 1 + 32 
+ */
+int->int pipeline LumaIntraPred16x16AndTQ(int QStep) {    
+    
+    
+    add LumaIntraPredictionModes16x16();
+    add splitjoin {
+	  split roundrobin(256,34);
+	  // left filter - T and Q, output int[4][4] (set of 16)
+	  add pipeline {
+		add Transform16x16LumaIntra();
+		add Factorized4x4Quantization(QStep); 
+		// quantization process is the same for all blocks
+		add Matrix4x4ToInt();
+		// at this point pixels are getting transmitted 
+		// by chunks of 4x4 blocks!!!
+		// each chunk is transmitted raster scan order within a macroblock
+		// note that this is not the same as the raster scan order 
+		// within a macroblock.
+	  }
+	  // right filter - do nothing, pass the prediction mode used
+	  add Identity<int>; // passes the mode + HVX down
+	  // join the transformed and quantized block with its mode
+	  join roundrobin(256,34);
+    }
+    
+}
+
+/**
+ * This pipeline encapsulates the splitjoin that calculates all prediction modes.
+ * The end filter chooses the best mode and keeps the best mode # along with its
+ * residual.
+ *
+ * For Intra Prediction 16x16 Luma mode calculations, see: PredictionModes16x16.str
+ *
+ * @input 256+H+V pixels to be intra predicted
+ * @output 256 residual values + best mode + HVX
+ */
+
+int->int pipeline LumaIntraPredictionModes16x16() {
+    
+    add splitjoin {
+	  split duplicate;
+	  add Prediction16x16Mode0AndSAE;
+	  add Prediction16x16Mode1AndSAE;
+	  add Prediction16x16Mode2AndSAE;
+	  add Prediction16x16Mode3AndSAE;
+	  // 256 = residual
+	  // 1 = sum of absolute errors
+	  join roundrobin(290);
+    }
+    add FindBestPredictionMode16x16();
+
+    add PredictionResultPrinter();
+}
+
+
+
+/**
+ * This pipeline reorders the stream if ints into 4x4 blocks, and a basic
+ * core transform will be performed. Since the block was intra predicted in
+ * 16x16 mode, 
+ */
+        
+int->int[4][4] pipeline Transform16x16LumaIntra() {
+    
+    // take a macroblock and split into 4x4 units for transform
+    add splitjoin {
+	  split roundrobin(4);
+	  for (int i=0; i<4; i++) {
+		add Identity<int>;
+	  }
+	  join roundrobin(16);
+    }
+    add IntTo4x4Matrix();
+    // 4x4 blocks are sent out
+    add FactorizedCoreDCT4x4Transform();
+    add Matrix4x4ToInt();
+    
+    add splitjoin {
+	  // picks out DC coefficients
+	  split roundrobin(1,15);
+	  // hierarchial transform
+	  // collect 16 of those DC coefficients and perform 4x4 Hadamard Transform
+	  add pipeline {
+		add IntTo4x4Matrix();
+		add Hadamard4x4();
+		add Matrix4x4ToInt();
+	  }	  
+	  add Identity<int>;
+	  join roundrobin(1, 15);
+    
+    }
+    add IntTo4x4Matrix();
+    
+}
+
+
+
+
+/**
+ * This pipeline captures the backward loop that does the following:
+ * 1. Hadamard (surprising yes, but it's true, it does go before rescaling)
+ * 2. Rescaling
+ * 3. Inverse Core Transform
+ * 4. Reconstruct
+ * 5. Keep 3 sets: 
+ *    - right edge pixels (16) for the next block -H
+ *    - bottom right corner pixel (1) for N-1 next block -X
+ *    - bottom edge pixels (16) for the N next block -V
+ *    (where N is the number of macroblocks along the width)
+ * 6. Delay these pixels using a filter, roundrobin join and feed back to the loop
+ *
+ * @input 256 pixels transformed and quantized, in 4x4 chunks, sent in raster order 
+ *        within a macroblock, and also withing the chunk. (int stream) + mode + HVX
+ * @output The H, V, and X pixels needed for the next forward prediction and
+ *         transform/quantization.
+ */
+
+int->int pipeline QTAndHVX(int width, int height, int QStep) {
+    
+    // see a set a possible QSteps in reference white paper
+    // may be adjusted to fit with each block, but right now
+    // it is fixed.
+   
+    add splitjoin {
+	  split roundrobin(256, 34); // separates block from mode + HVX
+	  // left stream
+	  add pipeline {
+		
+		// hadamard on DC coefficients
+		add splitjoin {
+		    split roundrobin(1,15); 
+		    // split out DC coefficients from rest of the 4x4 block
+		    add pipeline {
+			  add IntTo4x4Matrix();
+			  add Hadamard4x4();
+			  add Matrix4x4ToInt();
+		    }
+		    add Identity<int>;
+		    join roundrobin(1,15);
+		}
+		add IntTo4x4Matrix();
+		add Factorized4x4Rescale(QStep); // QStep is fixed for now
+		add FactorizedCoreInverseDCT4x4Transform();
+		add Matrix4x4ToInt();
+
+		// splitjoin to reorder pixels back to original raster order
+		add splitjoin {
+		    split roundrobin(16); // 4 streams of 4x4 blocks
+		    // 4 streams, one per column
+		    for (int i=0; i<4; i++) {
+			  add Identity<int>;
+		    }
+		    join roundrobin(4); // peal off 4 pixels at a time, left->right
+		    // 4 peels make 16 pixels in a row... back to 16x16 acroblock
+		}
+	  }
+	  // right stream
+	  add Identity<int>;
+	  join roundrobin(256,34);
+    }
+    add Reconstruct16x16LumaIntraPredFromHVX();
+    add DelayHVX(width, height);
+}
+
+/**
+ * This splitjoin puts the proper delay for the reconstructed H, V, X pixels
+ * for the next intra predicted 16x16 Luma block. It would provide the appropriate
+ * H, V, X for the next block. Consequently, this filter needs to store pixels
+ * in a buffer.
+ *
+ *    - right edge pixels (16) for the next block -H
+ *    - bottom right corner pixel (1) for N-1 next block -X
+ *    - bottom edge pixels (16) for the N next block -V
+ *    (where N is the number of macroblocks along the width)
+ *
+ * @input H,V,X from the previous block
+ * @output delayed, appropriate H,V,X for the next block
+ */
+int->int splitjoin DelayHVX(int width, int height) {
+
+    // number of macroblocks on width and height
+    int w = width>>4;
+    int h = height>>4;
+    split roundrobin(16, 16, 1); // separate H, V, X
+    // H
+    add pipeline {
+	  add splitjoin {
+		// first splitjoin gets rid of H pixels that are not needed
+		// such as H pixels at the bottom of the frame
+		split roundrobin(16*(w*(h-1)), 16*w);
+		add Identity<int>;
+		add Dead();
+		join roundrobin(1,0);
+	  }
+	  add splitjoin {
+		split roundrobin(0,1);
+		add Negative1s();
+		add Identity<int>;
+		join roundrobin(16*w, 16*(w*(h-1)));
+	  }
+	  //add PrintInts();
+    }
+
+    // V
+    add pipeline {
+	  add splitjoin {
+		split roundrobin(16*(w-1),16);
+		add Identity<int>;
+		add Dead();
+		join roundrobin(1,0);
+	  }
+	  add splitjoin {
+		split roundrobin(0,1);
+		add Negative1s();
+		add Identity<int>;
+		join roundrobin(16,16*(w-1));
+	  }
+	  //add PrintInts();
+    }
+    
+
+    // X
+    
+    add pipeline {
+	  add splitjoin {
+		split roundrobin(w-1,1);
+		add Identity<int>;
+		add Dead();
+		join roundrobin(1,0);
+	  }
+	  add splitjoin {
+		split roundrobin((h-1)*(w-1),w-1);
+		add Identity<int>;
+		add Dead();
+		join roundrobin(1,0);
+	  }
+	  add splitjoin {
+		split roundrobin(0,1);
+		add Negative1s();
+		add Identity<int>;
+		join roundrobin(1,w-1);
+	  }
+	  add splitjoin {
+		split roundrobin(0,1);
+		add Negative1s();
+		add Identity<int>;
+		join roundrobin(w,w*(h-1));
+	  }
+	  //add PrintInts();
+	  
+	  }
+    //add Identity<int>;
+    
+
+    join roundrobin(16,16,1);
+}
+
+
+//////////////////////////////////////////////////////
+// INTERNALS
+//////////////////////////////////////////////////////
+
+int->int[4][4] filter IntTo4x4Matrix() {
+    // 4x4 blocks are sent here in raster order
+    // following filter converts the int stream to an int[4][4] stream
+    work pop 16 push 1 {
+	  //println("int to 4x4 matrix");
+	 
+	  int[4][4] out;
+	  for (int row=0; row<4; row++) {
+		for (int col=0; col<4; col++) {
+		    out[row][col]=peek(row*4+col);
+		    //println("out: "+out[row][col]);
+		}
+	  }
+	  push(out);
+	  for (int j=0; j<16; j++) {
+		pop();
+	  }
+    }
+
+}
+
+
+int[4][4]->int filter Matrix4x4ToInt() {
+
+    work pop 1 push 16 {
+	  //println("matrix 4x4 to ints");
+	  int[4][4] in = peek(0);
+	  for (int row=0; row<4; row++) {
+		for (int col=0; col<4; col++) {
+		    push(in[row][col]);
+		    //println("in[row][col]: "+in[row][col]);
+		}
+	  }
+	  pop();
+    }
+}
+
+int->void filter Dead() {
+    work pop 1 {
+	  pop();
+    }
+}
+
+void->int filter Negative1s() {
+    work push 1 {
+	  push(-1);
+    }
+}
+
+int->void filter PrintInts() {
+    work pop 1 {
+	  print(peek(0)+" ");
+	  //push(peek(0));
+	  pop();
+    }
+}
+
+int->void filter PrintHVXIntsResult() {
+
+    int blockNum = 1;
+    work pop 33 {
+	  println("Block "+blockNum);
+	  for (int i=0; i<33; i++) {
+		print(peek(i)+" ");
+		if (i==15 || i==31) {
+		    println(" ");
+		}    
+	  }
+	  blockNum++;
+	  println(" ");
+	  for (int i=0; i<33; i++) {
+		pop();
+	  }
+    }
+}
+
+int->void filter PrintMBlockIntsResult() {
+
+    int blockNum = 1;
+    work pop 290 {
+	  println("Block "+blockNum);
+	  for (int r=0; r<16; r++) {
+		for (int c=0; c<16; c++) {
+		    print(peek(r*16+c)+" ");
+		    
+		}    
+		println(" ");
+	  }
+	  println("Mode "+peek(256));
+	  for (int count=257; count<290; count++) {
+		print(peek(count)+" ");
+	  }
+	  println(" ");
+	  blockNum++;
+	  println(" ");
+	  for (int i=0; i<290; i++) {
+		pop();
+	  }
+    }
+}
+
+void->int filter IntStream() {
+    int x=0;
+    work push 1 {
+	  push(x);
+	  //println("int stream: "+x);
+	  if (x > 255 && x < 289) {
+		x=0; // hvx = 0
+	  } else {
+		x++; // block
+	  }
+	  //x++;
+    }
+}
+
+
+/// LumaPredictionModes4x4.str ////////////////////////////////////////////////////////////////////////////////////////////////
+/*
+ * [Shirley]
+ * This file contains the various functions for generating the 9
+ * prediction modes for a 4x4 luma intra prediction block. 
+ *
+ * This is new to MPEG-2
+ *  
+ * Note that all prediction modes can be calculated independently
+ * of each other and therefore can be parallelized.
+ * 
+ * Reference: http://www.rgu.ac.uk/files/h264_intrapred.pdf
+ */
+
+/**
+ * @description
+ * This file contains various functions that takes in 13 pixels
+ * and calculate all 9 prediction modes such that the best one 
+ * can be used for a luminance block. Not all modes will require
+ * all 13 pixels. These filters will assume the input will give 
+ * luminance values from A through M (if needed), giving the 
+ * 'Sum of Absolute Errors' as the output of the filter.
+ * 
+ * 
+ * M  A  B  C  D  E  F  G  H 
+ * 
+ * I  0  1  2  3  x  x  x  x
+ * 
+ * J  4  5  6  7  x  x  x  x
+ * 
+ * K  8  9 10 11  x  x  x  x
+ * 
+ * L 12 13 14 15  x  x  x  x
+ * 
+ * The number represents the indices of the original block.
+ * 
+ * The cost function is the residual between the original block
+ * and the predicted block. The encoder will choose the prediction
+ * mode that minimizes the residual.
+ * 
+ * PREDICTION MODES:
+ * 0 - Vertical
+ * 1 - Horizontal
+ * 2 - DC
+ * 3 - Diagonal Down-Left
+ * 4 - Diagonal Down-Right
+ * 5 - Vertical-Right
+ * 6 - Horizontal-Down
+ * 7 - Vertical-Left
+ * 8 - Horizontal-Up
+ * 
+ *
+ * @author <a href="mailto:shirley.mit07@gmail.com">Shirley Fung</a>
+ * @file PredictionModes4x4Luma.str
+ * @version 1.0
+ */
+
+/**
+ * This constructs the pipeline for all the different prediction
+ * modes, find the mininum SAE and output the corresponding predidtion
+ * mode.
+ * 
+ * Note that the children of this splitjoin are pipelines that would
+ * prepare the A-M + 16 pixels for the prediction mode filters.
+ *
+ * @input A-M + 16 pixels from the original block (total: 29 pixels)
+ * @output recommended 4x4 luma prediction: ModeandPBlock4x4
+ */
+int->int pipeline BestPredictionMode4x4 {
+	add CalculatePredictionModes4x4;
+	add FindBestPredictionMode4x4();
+}
+
+/**
+ * This struct contains the SAE and the predicted block.
+ *
+ * @sae "Sum of Absolute Errors" between the original block and predicted block.
+ * @predBlock predicted block - original block calculated from the 
+ * original A-M pixels under a particular mode.
+ */
+struct SAEandPBlock4x4 {
+	int SAE;
+	int[16] residual;
+}
+
+/**
+ * This struct contains the mode and the predicted block. Used for the block
+ * with the mininum SAE.
+ *
+ * @mode prediction mode, has values from 0 to 8.
+ * @residual predicted block - original block calculated from the 
+ * original A-M pixels under a particular mode.
+ */
+struct ModeandPBlock4x4 {
+	int mode;
+	int[16] residual;
+}
+
+
+
+/**
+ * This constructs the splitjoin for all the different prediction
+ * modes, and gather them up so that the SAE can be compared.
+ * 
+ * Note that the children of this splitjoin are pipelines that would
+ * prepare the A-M + 16 pixels for the prediction mode filters.
+ *
+ * @input A-M + 16 pixels from the original block (total: 29 pixels)
+ * @output stream of all SAEandPredictedBlock4x4 (9 elements)
+ */
+int->int splitjoin CalculatePredictionModes4x4 {
+	split duplicate;
+	add PredictionMode0Pipeline;
+	add PredictionMode1Pipeline;
+	add PredictionMode2Pipeline;
+	add PredictionMode3Pipeline;
+	add PredictionMode4Pipeline;
+	add PredictionMode5Pipeline;
+	add PredictionMode6Pipeline;
+	add PredictionMode7Pipeline;
+	add PredictionMode8Pipeline;
+	join roundrobin;
+}
+
+
+/**
+ * This filter gathers all the sum of absolute errors from 
+ * all the prediction modes, and find the mininum - then output
+ * the prediction mode block. 
+ * 
+ * @input stream of all SAEandPredictedBlock4x4 (mode0 to mode8 in order)
+ * @output ModeandPBlock4x4 (recommended 4x4 luma prediction 
+ * mode (possible: 0 to 8) + predicted block)
+ */
+int->int splitjoin FindBestPredictionMode4x4() {
+	work pop 9 push 1 {
+		ModeandPBlock4x4 bestMode;
+		int currentMinSAE = peek(0).SAE;
+		bestMode.mode = 0;
+		for (int i=1; i<=8; i++) {
+			if (peek(i).SAE < currentMinSAE) {
+				bestMode.mode = i;
+				currentMinSAE = peek(i).SAE;
+			}
+		}
+		bestMode.mode = minPredictionMode;
+		bestMode.residual = peek(minPredictionMode).residual;
+		push(bestMode);
+	}
+}
+
+//////////////////////////////////////////////
+//PREDICTION MODE 0                         //
+//////////////////////////////////////////////
+
+/**
+ * This constructs the pipeline for prediction mode 0. The
+ * pipeline prepares the stream and adds the prediction mode filter.
+ * 
+ * @input A-M + 16 pixels from the original block (total: 29 pixels)
+ * @output SAEandPredictedBlock4x4 for mode 0
+ */
+int->int pipeline PredictionMode0Pipeline {
+	add PredictionMode0Prep();
+	add PredictionMode0();
+}
+
+/**
+ * This filter prepares the data for prediction mode 0. 
+ * 
+ * @input A-M + 16 pixels from the original block (total: 29 pixels)
+ * @output A,B,C,D + 16 pixels from the original block for mode 0
+ */
+int->int filter PredictionMode0Prep() {
+	work pop 29 push 20 {
+		// A,B,C,D
+		push(peek(0)); 
+		push(peek(1));
+		push(peek(2));
+		push(peek(3));
+		// original 16 pixels (index: 13-28)
+		for (int i=13; i<=28; i++) {
+			push(peek(i));
+		}
+		// pop all
+		for (int i=0; i<=28; i++) {
+			pop();
+		}
+	}
+}
+
+/**
+ * This function calculates prediction mode 0 for a 4x4 luminance
+ * block. This is also called: vertical. 
+ * 
+ * Note that only pixels A, B, C, and D is required.
+ * 
+ * Note: there is an alternate implementation to this filter.
+ *
+ * @input A,B,C,D + 16 pixels from the original block
+ * @output SAEandPBlock for mode 0
+ */
+int->int filter PredictionMode0() {
+	
+	// A,B,C,D 			peek(0-3);
+	// originalBlk 		peek(4,19);
+	work pop 20 push 1 {
+		
+		SAEandPBlock pBlock;
+
+		pBlock.SAE = 0; // sum of absolute errors
+		for (int i=4; i<19; i++) {
+			int predicted = peek(i%4);
+			int original = peek(i);
+			int difference = predicted - original;
+			pBlock.SAE += abs(difference);
+			pBlock.residual[i-4] = difference;
+		}
+		push(pBlock);
+		
+		for (int i=0; i<=19; i++) {
+			pop();
+		}
+	}
+}
+
+//////////////////////////////////////////////
+//PREDICTION MODE 1                         //
+//////////////////////////////////////////////
+
+/**
+ * This constructs the pipeline for prediction mode 1. The
+ * pipeline prepares the stream and adds the prediction mode filter.
+ * 
+ * @input A-M + 16 pixels from the original block (total: 29 pixels)
+ * @output SAEandPBlock for mode 1
+ */
+int->int pipeline PredictionMode1Pipeline {
+	add PredictionMode1Prep();
+	add PredictionMode1();
+}
+
+/**
+ * This filter prepares the data for prediction mode 1. 
+ * 
+ * @input A-M + 16 pixels from the original block (total: 29 pixels)
+ * @output I,J,K,L + 16 pixels from the original block for mode 1
+ */
+int->int filter PredictionMode1Prep() {
+	work pop 29 push 20 {
+		// I,J,K,L
+		push(peek(8)); 
+		push(peek(9));
+		push(peek(10));
+		push(peek(11));
+		// original 16 pixels (index: 13-28)
+		for (int i=13; i<=28; i++) {
+			push(peek(i));
+		}
+		// pop all
+		for (int i=0; i<=28; i++) {
+			pop();
+		}
+	}
+}
+
+/**
+ * This function calculates prediction mode 1 for a 4x4 luminance
+ * block. This is also called: horizontal.
+ * 
+ * Note that only pixels I, J, K, and L is required.
+ * 
+ * @input I,J,K,L + 16 pixels from the original block
+ * @output SAEandPBlock for mode 0
+ */
+int->int filter PredictionMode1() {
+
+	// I,J,K,L			peek(0-3);
+	// originalBlk 		peek(4,19);
+	work pop 20 push 1 {
+		
+		SAEandPBlock pBlock;
+		pBlock.SAE = 0; // sum of absolute errors
+		for (int rowCount=0; rowCount<4; rowCount++) {
+			int original = peek(i); // gives you I,J,K, or L
+			// interate though out values for each column
+			for (int colCount=0; colCount<4; colCount++) {
+				// note the peek index:
+				// for a rowCount of 0, 
+				// 4*(rowCount+1) gives you the offset to start at peek(4);
+				// and so on...
+				int predicted = peek(colCount + 4*(rowCount+1));
+				int difference = predicted - original;
+				pBlock.SAE += abs(difference);
+				pBlock.residual[rowCount*4+colCount] = difference;
+			}
+		}
+		push(pBlock);
+		
+		for (int i=0; i<=19; i++) {
+			pop();
+		}
+	}
+	
+}
+
+//////////////////////////////////////////////
+//PREDICTION MODE 2                         //
+//////////////////////////////////////////////
+
+
+/**
+ * This constructs the pipeline for prediction mode 2. The
+ * pipeline prepares the stream and adds the prediction mode filter.
+ * 
+ * @input A-M + 16 pixels from the original block (total: 29 pixels)
+ * @output SAEandPBlock for mode 2
+ */
+int->int pipeline PredictionMode2Pipeline {
+	add PredictionMode2Prep();
+	add PredictionMode2();
+}
+
+/**
+ * This filter prepares the data for prediction mode 2. 
+ * 
+ * @input A-M + 16 pixels from the original block (total: 29 pixels)
+ * @output A,B,C,D,I,J,K,L + 16 pixels from the original block for mode 2
+ */
+int->int filter PredictionMode2Prep() {
+	work pop 29 push 24 {
+		// A,B,C,D
+		push(peek(0)); 
+		push(peek(1));
+		push(peek(2));
+		push(peek(3));
+		// I,J,K,L
+		push(peek(8)); 
+		push(peek(9));
+		push(peek(10));
+		push(peek(11));
+		// original 16 pixels (index: 13-28)
+		for (int i=13; i<=28; i++) {
+			push(peek(i));
+		}
+		// pop all
+		for (int i=0; i<=28; i++) {
+			pop();
+		}
+	}
+}
+
+/**
+ * This function calculates prediction mode 2 for a 4x4 luminance
+ * block. This is a DC interpolation where the entire output stream
+ * has the mean value of all luminance values from A,B,C,D,I,J,K,L.
+ * In other words: result luminance value = sum{A,B,C,D,I,J,K,L}/8 
+ * Consequently, A known values are required to generate the 16
+ * predicted pixels.
+ * @input A,B,C,D,I,J,K,L + 16 original pixels 
+ * @output SAEandPBlock for mode 2
+ */
+int->int filter PredictionMode2() {
+	
+	// A,B,C,D,I,J,K,L		peek(0-7);
+	// originalBlk 			peek(8,23);	
+	work pop 28 push 1 {
+		
+		int cumulativeAvg = 0;
+		
+		SAEandPBlock pBlock;
+		pBlock.SAE = 0;
+		for (int i=0; i<=7; i++) {
+			cumulativeAvg =+ (int) peek(i)/8;
+		}
+		
+		for (int origCounter=8; origCounter<=23; origCounter++) {
+			int original = peek(origCounter);
+			int difference = cumulativeAvg - original;
+			pBlock.SAE += abs(difference);
+			pBlock.residual[origCounter-8] = difference;
+		}
+		
+		push(pBlock);
+		
+		for (int i=0; i<=23; i++) {
+			pop();
+		}
+	}   
+}
+
+//////////////////////////////////////////////
+//PREDICTION MODE 3                         //
+//////////////////////////////////////////////
+
+
+/**
+ * This constructs the pipeline for prediction mode 3. The
+ * pipeline prepares the stream and adds the prediction mode filter.
+ * 
+ * @input A-M + 16 pixels from the original block (total: 29 pixels)
+ * @output SAEandPBlock for mode 3
+ */
+int->int pipeline PredictionMode3Pipeline {
+	add PredictionMode3Prep();
+	add PredictionMode3();
+}
+
+/**
+ * This filter prepares the data for prediction mode 3. 
+ * 
+ * @input A-M + 16 pixels from the original block (total: 29 pixels)
+ * @output A,B,C,D,E,F,G,H + 16 pixels from the original block for mode 3
+ */
+int->int filter PredictionMode3Prep() {
+	work pop 29 push 24 {
+		// A,B,C,D,E,F,G,H
+		for (int i=0; i<=7; i++) {
+			push(peek(i));
+		}
+		// original 16 pixels (index: 13-28)
+		for (int i=13; i<=28; i++) {
+			push(peek(i));
+		}
+		// pop all
+		for (int i=0; i<=28; i++) {
+			pop();
+		}
+	}
+}
+
+
+
+/**
+ * This function calculates prediction mode 3 for a 4x4 luminance
+ * block. This is also called: diagonal down-left.
+ * @input A,B,C,D,E,F,G,H + 16 original pixels
+ * @output SAEandPBlock for mode 3
+ */
+int->int filter PredictionMode3() {
+	
+	// A,B,C,D,E,F,G,H		peek(0-7);
+	// originalBlk 			peek(8,23);
+
+	work pop 24 push 1 {
+		
+		SAEandPBlock pBlock;
+		pBlock.SAE = 0;
+		int[16] predBlock;
+		// calculate values for the 4x4 matrix
+		predBlock[0] = (int) (peek(0) + 2*peek(1) + peek(2) + 2) / 4; 
+		predBlock[1] =
+		predBlock[4] = (int) (peek(1) + 2*input(2) + peek(3) + 2) / 4; 
+		predBlock[2] =
+		predBlock[5] =
+		predBlock[8] = (int) (peek(2) + 2*peek(3) + peek(4) + 2) / 4; 
+		predBlock[3] =
+		predBlock[6] =
+		predBlock[9] =
+		predBlock[12] = (int) (peek(3) + 2*peek(4) + peek(5) + 2) / 4;
+		predBlock[7] =
+		predBlock[10] =
+		predBlock[13] = (int) (peek(4) + 2*peek(5) + peek(6) + 2) / 4; 
+		predBlock[11] =
+		predBlock[14] = (int) (peek(5) + 2*peek(6) + peek(7) + 2) / 4; 
+		predBlock[15] = (int) (peek(6) + 3*peek(7) + 2) / 4;
+		
+		for (int i=8; i<=23; i++) {
+			int difference = predBlock[i] - peek(i);
+			pBlock.SAE += abs(difference);
+			pBlock.residual[i-8] = difference;
+		}
+		
+		push(pBlock);
+		
+		for (int i=0; i<=23; i++) {
+			pop();
+		}
+	}   
+}
+
+//////////////////////////////////////////////
+//PREDICTION MODE 4                         //
+//////////////////////////////////////////////
+
+
+/**
+ * This constructs the pipeline for prediction mode 4. The
+ * pipeline prepares the stream and adds the prediction mode filter.
+ * 
+ * @input A-M + 16 pixels from the original block (total: 29 pixels)
+ * @output SAEandPBlock for mode 4
+ */
+int->int pipeline PredictionMode4Pipeline {
+	add PredictionMode4Prep();
+	add PredictionMode4();
+}
+
+/**
+ * This filter prepares the data for prediction mode 4. 
+ * 
+ * @input A-M + 16 pixels from the original block (total: 29 pixels)
+ * @output A,B,C,D,I,J,K,L,M + 16 pixels from the original block for mode 4
+ */
+int->int filter PredictionMode4Prep() {
+	work pop 29 push 25 {
+		// A,B,C,D,I,J,K,L,M 
+		push(peek(0)); 
+		push(peek(1));
+		push(peek(2));
+		push(peek(3));
+		push(peek(8)); 
+		push(peek(9));
+		push(peek(10));
+		push(peek(11));
+		push(peek(12));
+		
+		// original 16 pixels (index: 13-28)
+		for (int i=13; i<=28; i++) {
+			push(peek(i));
+		}
+		// pop all
+		for (int i=0; i<=28; i++) {
+			pop();
+		}
+	}
+}
+
+
+/**
+ * This function calculates prediction mode 4 for a 4x4 luminance
+ * block. This is also called: diagonal down-right.
+ * @input A,B,C,D,I,J,K,L,M + 16 original pixels
+ * @output SAEandPBlock for mode 4
+ */
+int->int filter PredictionMode4() {
+	
+	// A,B,C,D,I,J,K,L,M	peek(0-8);
+	// originalBlk 			peek(9,24);
+
+	work pop 25 push 1 {
+		
+		SAEandPBlock pBlock;
+		pBlock.SAE = 0;
+		int[16] predBlock;
+		// calculate values for the 4x4 matrix
+		predBlock[0] = 
+		predBlock[5] =
+		predBlock[10] =
+		predBlock[15] = (int) (peek(4) + 2*peek(8) + peek(0) + 2) / 4; 
+		predBlock[4] =
+		predBlock[9] =
+		predBlock[14] = (int) (peek(5) + 2*peek(4) + peek(8)] + 2) / 4;
+		predBlock[8] =
+		predBlock[13] = (int) (peek(6) + 2*peek(5) + peek(4) + 2) / 4;
+		predBlock[12] = (int) (peek(7) + 2*peek(6) + peek(5) + 2) / 4;
+		predBlock[1] =
+		predBlock[6] =
+		predBlock[11] = (int) (peek(8) + 2*peek(0) + peek(1) + 2) / 4;
+		predBlock[2] =
+		predBlock[7] = (int) (peek(0) + 2*peek(1) + peek(2) + 2) / 4;
+		predBlock[3] = (int) (peek(1) + 2*peek(2) + peek(3) + 2) / 4;
+		
+
+		for (int i=9; i<=24; i++) {
+			int difference = predBlock[i] - peek(i);
+			pBlock.SAE += abs(difference);
+			pBlock.residual[i-9] = difference;
+		}
+		
+		push(pBlock);
+		
+		for (int i=0; i<=24; i++) {
+			pop();
+		}
+	}   
+}
+
+//////////////////////////////////////////////
+//PREDICTION MODE 5                         //
+//////////////////////////////////////////////
+
+
+/**
+ * This constructs the pipeline for prediction mode 5. The
+ * pipeline prepares the stream and adds the prediction mode filter.
+ * 
+ * @input A-M + 16 pixels from the original block (total: 29 pixels)
+ * @output SAEandPBlock for mode 5
+ */
+int->int pipeline PredictionMode5Pipeline {
+	add PredictionMode5Prep();
+	add PredictionMode5();
+}
+
+/**
+ * This filter prepares the data for prediction mode 5. 
+ * 
+ * @input A-M + 16 pixels from the original block (total: 29 pixels)
+ * @output A,B,C,D,I,J,K,M + 16 pixels from the original block for mode 5
+ */
+int->int filter PredictionMode5Prep() {
+	work pop 29 push 24 {
+		// A,B,C,D,I,J,K,M
+		push(peek(0)); 
+		push(peek(1));
+		push(peek(2));
+		push(peek(3));
+		push(peek(8)); 
+		push(peek(9));
+		push(peek(10));
+		push(peek(12));
+		
+		// original 16 pixels (index: 13-28)
+		for (int i=13; i<=28; i++) {
+			push(peek(i));
+		}
+		// pop all
+		for (int i=0; i<=28; i++) {
+			pop();
+		}
+	}
+}
+
+/**
+ * This function calculates prediction mode 5 for a 4x4 luminance
+ * block. This is also called: vertical-right.
+ * @input A,B,C,D,I,J,K,M + 16 original pixels
+ * @output SAEandPBlocks for mode 5
+ */
+int->int filter PredictionMode5() {
+	
+	// A,B,C,D,I,J,K,M		peek(0-7);
+	// originalBlk 			peek(8,23);
+	
+	work pop 24 push 1 {
+		
+		SAEandPBlock pBlock;
+		pBlock.SAE = 0;
+		int[16] predBlock;
+		// calculate values for the 4x4 matrix
+		predBlock[0] = 
+		predBlock[9] = (int) (peek(7) + peek(0) + 1) / 2; 
+		predBlock[1] =
+		predBlock[10] = (int) (peek(0) + peek(1) + 1) / 2; 
+		predBlock[2] =
+		predBlock[11] = (int) (peek(1) + peek(2) + 1) / 2;
+		predBlock[3] = (int) (peek(2) + peek(3) + 1) / 2;
+		predBlock[4] =
+		predBlock[13] = (int) (peek(4) + 2*peek(7) + peek(0) + 2) / 4;
+		predBlock[5] =
+		predBlock[14] = (int) (peek(7) + 2*peek(0) + peek(1) + 2) / 4;
+		predBlock[6] =
+		predBlock[15] = (int) (peek(0) + 2*peek(1) + peek(2) + 2) / 4;
+		predBlock[7] = (int) (peek(1) + 2*peek(2) + peek(3) + 2) / 4;
+		predBlock[8] = (int) (peek(7) + 2*peek(4) + peek(5) + 2) / 4;
+		predBlock[12] = (int) (peek(4) + 2*peek(5) + peek(6) + 2) / 4;
+
+		for (int i=8; i<=23; i++) {
+			int difference = predBlock[i-8] - peek(i);
+			pBlock.SAE += abs(difference);
+			pBlock.residual[i-8] = difference;
+		}
+		
+		push(pBlock);
+		
+		for (int i=0; i<=23; i++) {
+			pop();
+		}
+	} 
+}
+
+//////////////////////////////////////////////
+//PREDICTION MODE 6                         //
+//////////////////////////////////////////////
+
+
+/**
+ * This constructs the pipeline for prediction mode 6. The
+ * pipeline prepares the stream and adds the prediction mode filter.
+ * 
+ * @input A-M + 16 pixels from the original block (total: 29 pixels)
+ * @output SAEandPBlock for mode 6
+ */
+int->int pipeline PredictionMode6Pipeline {
+	add PredictionMode6Prep();
+	add PredictionMode6();
+}
+
+/**
+ * This filter prepares the data for prediction mode 6. 
+ * 
+ * @input A-M + 16 pixels from the original block (total: 29 pixels)
+ * @output A,B,C,I,J,K,L,M + 16 pixels from the original block for mode 6
+ */
+int->int filter PredictionMode6Prep() {
+	work pop 29 push 24 {
+		// A,B,C,I,J,K,L,M
+		push(peek(0)); 
+		push(peek(1));
+		push(peek(2));
+		push(peek(8));
+		push(peek(9)); 
+		push(peek(10));
+		push(peek(11));
+		push(peek(12));
+		
+		// original 16 pixels (index: 13-28)
+		for (int i=13; i<=28; i++) {
+			push(peek(i));
+		}
+		// pop all
+		for (int i=0; i<=28; i++) {
+			pop();
+		}
+	}
+}
+
+/**
+ * This function calculates prediction mode 6 for a 4x4 luminance
+ * block. This is also called: horizontal-down.
+ * @input A,B,C,I,J,K,L,M + 16 original pixels
+ * @output SAEandPBlock for mode 6
+ */
+int->int filter PredictionMode6() {
+	
+	// A,B,C,I,J,K,L,M		peek(0-7);
+	// originalBlk 			peek(8,23);
+
+	work pop 24 push 1 {
+		
+		SAEandPBlock pBlock;
+		pBlock.SAE = 0;
+		int[16] predBlock;
+		// calculate values for the 4x4 matrix
+		predBlock[0] = 
+		predBlock[6] = (int) (peek(7) + peek(3) + 1) / 2; 
+		predBlock[1] =
+		predBlock[7] = (int) (peek(3) + 2*peek(7) + peek(0) + 2) / 4; 
+		predBlock[2] =
+		predBlock[2] = (int) (peek(7) + 2*peek(0) + peek(1) + 2) / 4; 
+		predBlock[3] = (int) (peek(7) + 2*peek(0) + peek(1) + 2) / 4;
+		predBlock[4] =
+		predBlock[10] = (int) (peek(3) + peek(4) + 1) / 2;
+		predBlock[5] =
+		predBlock[11] = (int) (peek(7) + 2*peek(3) + peek(4) + 2) / 4;
+		predBlock[8] =
+		predBlock[14] = (int) (peek(4) + peek(5) + 1) / 2;
+		predBlock[9] = 
+		predBlock[15] = (int) (peek(3) + 2*peek(4) + peek(5) + 2) / 4;
+		predBlock[12] = (int) (peek(4) + 2*peek(5) + peek(6) + 2) / 4;
+
+
+		for (int i=8; i<=23; i++) {
+			int difference = predBlock[i-8] - peek(i);
+			pBlock.SAE += abs(difference);
+			pBlock.residual[i-8] = difference;
+		}
+		
+		push(pBlock);
+		
+		for (int i=0; i<=23; i++) {
+			pop();
+		}
+	} 
+}
+
+//////////////////////////////////////////////
+//PREDICTION MODE 7                         //
+//////////////////////////////////////////////
+
+
+/**
+ * This constructs the pipeline for prediction mode 7. The
+ * pipeline prepares the stream and adds the prediction mode filter.
+ * 
+ * @input A-M + 16 pixels from the original block (total: 29 pixels)
+ * @output SAEandPBlock for mode 7
+ */
+int->int pipeline PredictionMode7Pipeline {
+	add PredictionMode7Prep();
+	add PredictionMode7();
+}
+
+/**
+ * This filter prepares the data for prediction mode 7. 
+ * 
+ * @input A-M + 16 pixels from the original block (total: 29 pixels)
+ * @output A,B,C,D,E,F,G + 16 pixels from the original block for mode 7
+ */
+int->int filter PredictionMode7Prep() {
+	work pop 29 push 23 {
+		// A,B,C,D,E,F,G
+		push(peek(0)); 
+		push(peek(1));
+		push(peek(2));
+		push(peek(3));
+		push(peek(4)); 
+		push(peek(5));
+		push(peek(6));
+	
+		// original 16 pixels (index: 13-28)
+		for (int i=13; i<=28; i++) {
+			push(peek(i));
+		}
+		// pop all
+		for (int i=0; i<=28; i++) {
+			pop();
+		}
+	}
+}
+
+/**
+ * This function calculates prediction mode 7 for a 4x4 luminance
+ * block. This is also called: vertical-left.
+ * @input A,B,C,D,E,F,G + 16 original pixels
+ * @output SAEandPBlock for mode 7
+ */
+int->int filter PredictionMode7() {
+	
+	// A,B,C,D,E,F,G		peek(0-6);
+	// originalBlk 			peek(7,22);
+	work pop 23 push 1 {
+		
+		SAEandPBlock pBlock;
+		pBlock.SAE = 0;
+		int[16] predBlock;
+		// calculate values for the 4x4 matrix
+		predBlock[0] = (int) (peek(0) + peek(1) + 1) / 2; 
+		predBlock[1] =  
+		predBlock[8] = (int) (peek(1) + peek(2) + 1) / 2;
+		predBlock[2] = 
+		predBlock[9] = (int) (peek(2) + peek(3) + 1) / 2;
+		predBlock[3] = 
+		predBlock[10] = (int) (peek(3) + peek(4) + 1) / 2;
+		predBlock[11] = (int) (peek(4) + peek(5) + 1) / 2;
+		predBlock[4] = (int) (peek(0) + 2*peek(1) + peek(2) + 2) / 4; 
+		predBlock[5] =
+		predBlock[12] = (int) (peek(1) + 2*peek(2) + peek(3) + 2) / 4; 
+		predBlock[6] =
+		predBlock[13] = (int) (peek(2) + 2*peek(3) + peek(4) + 2) / 4; 
+		predBlock[7] =
+		predBlock[14] = (int) (peek(3) + 2*peek(4) + peek(5) + 2) / 4;
+		predBlock[15] = (int) (peek(4) + 2*peek(5) + peek(6) + 2) / 4;  
+
+		for (int i=7; i<=22; i++) {
+			int difference = predBlock[i-7] - peek(i);
+			pBlock.SAE += abs(difference);
+			pBlock.residual[i-7] = difference;
+			
+		}
+		
+		push(pBlock);
+		
+		for (int i=0; i<=23; i++) {
+			pop();
+		}
+	} 
+}
+
+//////////////////////////////////////////////
+//PREDICTION MODE 8                         //
+//////////////////////////////////////////////
+
+
+/**
+ * This constructs the pipeline for prediction mode 8. The
+ * pipeline prepares the stream and adds the prediction mode filter.
+ * 
+ * @input A-M + 16 pixels from the original block (total: 29 pixels)
+ * @output SAEandPBlock for mode 8
+ */
+int->int pipeline PredictionMode8Pipeline {
+	add PredictionMode8Prep();
+	add PredictionMode8();
+}
+
+/**
+ * This filter prepares the data for prediction mode 8. 
+ * 
+ * @input A-M + 16 pixels from the original block (total: 29 pixels)
+ * @output I,J,K,L + 16 pixels from the original block for mode 8
+ */
+int->int filter PredictionMode7Prep() {
+	work pop 29 push 20 {
+		// I,J,K,L
+		push(peek(8)); 
+		push(peek(9));
+		push(peek(10));
+		push(peek(11));
+	
+		// original 16 pixels (index: 13-28)
+		for (int i=13; i<=28; i++) {
+			push(peek(i));
+		}
+		// pop all
+		for (int i=0; i<=28; i++) {
+			pop();
+		}
+	}
+}
+
+
+/**
+ * This function calculates prediction mode 8 for a 4x4 luminance
+ * block. This is also called: horizontal-up.
+ * @input I,J,K,L + 16 original pixels
+ * @output sSAEandPBlock for mode 8
+ */
+int->int filter PredictionMode8() {
+	
+	work pop 20 push 1 {
+		
+		SAEandPBlock pBlock;
+		// I,J,K,L				peek(0-3);
+		// originalBlk 			peek(4,19);
+		pBlock.SAE = 0;
+		int[16] predictionBlock;
+		// calculate values for the 4x4 matrix
+		pBlock.predBlock[0] = (int) (peek(0) + peek(1) + 1) / 2; 
+		pBlock.predBlock[1] = (int) (peek(0) + 2*peek(1) + peek(2) + 2) / 4;
+		pBlock.predBlock[2] = 
+		pBlock.predBlock[4] = (int) (peek(1) + peek(2) + 1) / 2;
+		pBlock.predBlock[3] = 
+		pBlock.predBlock[5] = (int) (peek(1) + 2*peek(2) + peek(3) + 2) / 4;
+		pBlock.predBlock[6] = 
+		pBlock.predBlock[8] = (int) (peek(2) + peek(3) + 1) / 2;
+		pBlock.predBlock[7] = 
+		pBlock.predBlock[9] = (int) (peek(2) + 3*peek(3) + 2) / 4;
+		pBlock.predBlock[11] =
+		pBlock.predBlock[13] =
+		pBlock.predBlock[14] =
+		pBlock.predBlock[15] = input[11];
+
+
+		for (int i=4; i<=19; i++) {
+			int difference = predBlock[i-4] - peek(i);
+			pBlock.SAE += abs(difference);
+			pBlock.residual[i-4] = difference;
+			
+		}
+		
+		push(pBlock);
+		
+		for (int i=0; i<=23; i++) {
+			pop();
+		}
+	} 
+}
+
+
+
+
+/// MPEG4Encoder.str /////////////////////////////////////////////////////////////////////////////////////////////////////
+/**
+ * @description
+ * This is the main file that contains all the filters required to encode
+ * MPEG-4 compliant video. The specification for MPEG-4 (Part 10) used is 
+ * the ITU-T H-Series Recommendation for H.264.
+ * 
+ * @author <a href="mailto:shirley.mit07@gmail.com">Shirley Fung</a>
+ * @file MPEG4Encoder.str
+ * @version 1.0
+ */
+
+/** 
+ * List of TODOs
+ * -remove any parameterizable structs
+ * -decide on a fix resolution that the encoder will work for, FIX ARRAY SIZES!
+ */
+
+/**
+ * Interprets an input stream of raw video and encodes a compressed MPEG-4 
+ * compliant bit stream, in accordance with the ITU-T specification.
+ * 
+ * The encoder is limited to work only with CIF videos in YCrCb 4:2:0 planar format,
+ * with resolution of 288h x 352w. However, with small changes in the code, it
+ * can work with QCIF files as well. It is important that the width and height
+ * dimensions must be in multiples of 16 for macroblock division to work. The
+ * reason why the input video resolution is fixed due to the fact that there
+ * is no parameterizable structs, arrays of macroblocks must be of a fixed size.
+ * 
+ * @input VOID
+ * @output An MPEG-4 compliant bit stream of variable length.
+ */ 
+void->bit pipeline rawImageStream_to_MPEGStream() {
+	
+    // video parameters
+    int width = 352;
+    int height = 288;
+    // int numPictures = 300; 
+	
+    portal<SendBackReconstructedFrame> portal_referenceFrame;
+	
+	
+    add VideoProcessor(width, height); // similar to mpeg2
+    // see VideoProcessor.str, for testing purposes, ver 1.46 does not
+    // take the W,H,numPictures as parameters
+		
+    add Prediction(portal_referenceFrame); 
+    add TransformAndQuantization; // add parameters
+    add splitjoin {
+	  duplicate;
+	  add Identity<CodedFrame>;
+	  add pipeline {
+		add InverseTransformAndQuantization; // add parameters
+		add SendBackReconstructedFrame to portal_referenceFrame
+	  }
+			
+	  join roundrobin(1);
+    }
+									 	 
+	/* Note:
+	 * These frames are sent back to the Prediction filter because the 
+	 * transform and quantization stages produce a distorted frame 
+	 * (process is lossy)
+	 */
+    add ReorderFrames; 
+    add EntropyEncoding;
+    // write to file!
+}
+
+
+
+
+/**
+ * Interprets an input stream of successive frames (in macroblock form), and produces a 
+ * stream of predicted frames (P slices).
+ * @param parameters has not been set in stone yet...
+ * @input A series of frames in macroblock order
+ * @output A stream of predicted frames (defined new struct: PredictedFrame).
+ */
+Frame->PredictedFrame pipeline Prediction(portal<SendBackReconstructedFrame> 
+								 	portal_referenceFrame) {
+
+}
+
+/**
+ * Interprets an input stream of predicted frames, and produces a 
+ * stream of coded frames.
+ * @param parameters has not been set in stone yet...
+ * @input A stream of predicted frames 
+ * @output A stream of coded frames (defined new struct: PredictedFrame).
+ */
+PredictedFrame->CodedFrame pipeline TransformAndQuantization() {
+	
+}
+
+/**
+ * Interprets an input stream of coded frames, and produces a 
+ * stream of reconstructed frames.
+ * @param parameters has not been set in stone yet...
+ * @input A stream of coded frames 
+ * @output A stream of coded frames.
+ */
+CodedFrame->CodedFrame pipeline InverseTransformAndQuantization() {
+	
+}
+
+/**
+ * Interprets an input stream of coded frames, and produces a 
+ * stream of coded frames. Note that this handles sending back 
+ * reconstructed frames for intra and inter prediction. The stream
+ * of coded frames will be OUT OF ORDER for final entropy encoding.
+ * 
+ * Note that inter prediction will require filtered blocks.
+ * 
+ * @param parameters has not been set in stone yet...
+ * @input A stream of coded frames 
+ * @output A stream of coded frames
+ */
+CodedFrame->CodedFrame filter SendBackReconstructedFrame() {
+	
+}
+
+// ReorderFrames && EntropyEncoding needed here
+
+
+/* ********************************************************
+ * STRUCTS FOR VARIOUS DATA TYPES
+ * Note: more structs will be needed for intra/inter 
+ * prediction to tag the necessary labels for block sizes
+ * *********************************************************/
+
+
+

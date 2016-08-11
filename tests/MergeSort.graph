@@ -1,0 +1,40 @@
+pipeline
+  filter 0 FileReader
+  pipeline
+    splitjoin
+      pipeline
+        splitjoin
+          pipeline
+            splitjoin
+              pipeline
+                filter 1 Merger
+              pipeline
+                filter 2 Merger
+            filter 3 Merger
+          pipeline
+            splitjoin
+              pipeline
+                filter 4 Merger
+              pipeline
+                filter 5 Merger
+            filter 6 Merger
+        filter 7 Merger
+      pipeline
+        splitjoin
+          pipeline
+            splitjoin
+              pipeline
+                filter 8 Merger
+              pipeline
+                filter 9 Merger
+            filter 10 Merger
+          pipeline
+            splitjoin
+              pipeline
+                filter 11 Merger
+              pipeline
+                filter 12 Merger
+            filter 13 Merger
+        filter 14 Merger
+    filter 15 Merger
+  filter 16 FileWriter

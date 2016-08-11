@@ -1,0 +1,240 @@
+cpu_0_0_0
+    FileReader_0
+        wait read file: 29 on CoreVAFileInputChannel
+        wait write scramble_1: 13 on MemoryChannel2
+        wait write FileReader_0: 4 on FileReaderSplitBuffer
+        work: 1
+        done write split: 1000 on FileReaderSplitBuffer
+        done write file: 36 on CoreVAFileInputChannel
+        done write scramble_1: 1 on MemoryChannel2
+    scramble_1
+        wait read FileReader_0: 13 on MemoryChannel2
+        wait write diff_encode_1: 13 on MemoryChannel2
+        work: 41
+        done read FileReader_0: 1 on MemoryChannel2
+        done write diff_encode_1: 1 on MemoryChannel2
+    diff_encode_1
+        wait read scramble_1: 13 on MemoryChannel2
+        wait write chunk2symbol_1_1: 13 on MemoryChannel2
+        wait write chunk2symbol_1_2: 13 on MemoryChannel2
+        wait write chunk2symbol_1_3: 13 on MemoryChannel2
+        wait write diff_encode_1: 4 on SimpleMergeSplitBuffer
+        work: 85
+        done read scramble_1: 1 on MemoryChannel2
+        done write split: 24 on SimpleMergeSplitBuffer
+        done write diff_encode_1: 24 on SimpleMergeSplitBuffer
+        done write chunk2symbol_1_1: 1 on MemoryChannel2
+        done write chunk2symbol_1_2: 1 on MemoryChannel2
+        done write chunk2symbol_1_3: 1 on MemoryChannel2
+    chunk2symbol_1_1
+        wait read diff_encode_1: 13 on MemoryChannel2
+        wait write fir_filter_half_1_1: 20 on CoreVAClusterChannel
+        wait write fir_filter_half_1_7: 20 on CoreVAClusterChannel
+        wait write fir_filter_half_2_1: 20 on CoreVAClusterChannel
+        wait write fir_filter_half_2_7: 20 on CoreVAClusterChannel
+        wait write fir_filter_half_1_2: 20 on CoreVAClusterChannel
+        wait write fir_filter_half_2_2: 20 on CoreVAClusterChannel
+        wait write chunk2symbol_1_1: 4 on SimpleMergeSplitBuffer
+        work: 17
+        done read diff_encode_1: 1 on MemoryChannel2
+        done write split: 16 on SimpleMergeSplitBuffer
+        done write chunk2symbol_1_1: 16 on SimpleMergeSplitBuffer
+        done write fir_filter_half_1_1: 21 on CoreVAClusterChannel
+        done write fir_filter_half_1_7: 21 on CoreVAClusterChannel
+        done write fir_filter_half_2_1: 21 on CoreVAClusterChannel
+        done write fir_filter_half_2_7: 21 on CoreVAClusterChannel
+        done write fir_filter_half_1_2: 21 on CoreVAClusterChannel
+        done write fir_filter_half_2_2: 21 on CoreVAClusterChannel
+    chunk2symbol_1_2
+        wait read diff_encode_1: 13 on MemoryChannel2
+        wait write fir_filter_half_1_3: 20 on CoreVAClusterChannel
+        wait write fir_filter_half_1_2: 20 on CoreVAClusterChannel
+        wait write fir_filter_half_2_3: 20 on CoreVAClusterChannel
+        wait write fir_filter_half_2_2: 20 on CoreVAClusterChannel
+        wait write fir_filter_half_1_4: 20 on CoreVAClusterChannel
+        wait write fir_filter_half_2_4: 20 on CoreVAClusterChannel
+        wait write fir_filter_half_1_5: 20 on CoreVAClusterChannel
+        wait write fir_filter_half_2_5: 20 on CoreVAClusterChannel
+        wait write chunk2symbol_1_2: 4 on SimpleMergeSplitBuffer
+        work: 17
+        done read diff_encode_1: 1 on MemoryChannel2
+        done write split: 18 on SimpleMergeSplitBuffer
+        done write chunk2symbol_1_2: 18 on SimpleMergeSplitBuffer
+        done write fir_filter_half_1_3: 21 on CoreVAClusterChannel
+        done write fir_filter_half_1_2: 21 on CoreVAClusterChannel
+        done write fir_filter_half_2_3: 21 on CoreVAClusterChannel
+        done write fir_filter_half_2_2: 21 on CoreVAClusterChannel
+        done write fir_filter_half_1_4: 21 on CoreVAClusterChannel
+        done write fir_filter_half_2_4: 21 on CoreVAClusterChannel
+        done write fir_filter_half_1_5: 21 on CoreVAClusterChannel
+        done write fir_filter_half_2_5: 21 on CoreVAClusterChannel
+    chunk2symbol_1_3
+        wait read diff_encode_1: 13 on MemoryChannel2
+        wait write fir_filter_half_1_6: 20 on CoreVAClusterChannel
+        wait write fir_filter_half_1_5: 20 on CoreVAClusterChannel
+        wait write fir_filter_half_2_6: 20 on CoreVAClusterChannel
+        wait write fir_filter_half_2_5: 20 on CoreVAClusterChannel
+        wait write fir_filter_half_1_7: 20 on CoreVAClusterChannel
+        wait write fir_filter_half_2_7: 20 on CoreVAClusterChannel
+        wait write chunk2symbol_1_3: 4 on SimpleMergeSplitBuffer
+        work: 11
+        done read diff_encode_1: 1 on MemoryChannel2
+        done write split: 12 on SimpleMergeSplitBuffer
+        done write chunk2symbol_1_3: 12 on SimpleMergeSplitBuffer
+        done write fir_filter_half_1_6: 21 on CoreVAClusterChannel
+        done write fir_filter_half_1_5: 21 on CoreVAClusterChannel
+        done write fir_filter_half_2_6: 21 on CoreVAClusterChannel
+        done write fir_filter_half_2_5: 21 on CoreVAClusterChannel
+        done write fir_filter_half_1_7: 21 on CoreVAClusterChannel
+        done write fir_filter_half_2_7: 21 on CoreVAClusterChannel
+    total: 2357
+cpu_0_0_1
+    fir_filter_half_2_2
+        wait read chunk2symbol_1_1: 50 on CoreVAClusterChannel
+        wait read chunk2symbol_1_2: 50 on CoreVAClusterChannel
+        wait read fir_filter_half_2_2: 0 on SimpleMergeSplitBuffer
+        wait write FileWriter_1: 20 on CoreVAClusterChannel
+        work: 75
+        done read chunk2symbol_1_1: 24 on CoreVAClusterChannel
+        done read chunk2symbol_1_2: 24 on CoreVAClusterChannel
+        done write FileWriter_1: 21 on CoreVAClusterChannel
+    fir_filter_half_2_3
+        wait read chunk2symbol_1_2: 50 on CoreVAClusterChannel
+        wait write FileWriter_1: 20 on CoreVAClusterChannel
+        work: 75
+        done read chunk2symbol_1_2: 24 on CoreVAClusterChannel
+        done write FileWriter_1: 21 on CoreVAClusterChannel
+    total: 454
+cpu_0_0_2
+    fir_filter_half_1_2
+        wait read chunk2symbol_1_1: 50 on CoreVAClusterChannel
+        wait read chunk2symbol_1_2: 50 on CoreVAClusterChannel
+        wait read fir_filter_half_1_2: 0 on SimpleMergeSplitBuffer
+        wait write FileWriter_1: 13 on MemoryChannel2
+        work: 75
+        done read chunk2symbol_1_1: 24 on CoreVAClusterChannel
+        done read chunk2symbol_1_2: 24 on CoreVAClusterChannel
+        done write FileWriter_1: 1 on MemoryChannel2
+    fir_filter_half_2_4
+        wait read chunk2symbol_1_2: 50 on CoreVAClusterChannel
+        wait write FileWriter_1: 13 on MemoryChannel2
+        work: 75
+        done read chunk2symbol_1_2: 24 on CoreVAClusterChannel
+        done write FileWriter_1: 1 on MemoryChannel2
+    FileWriter_1
+        wait read fir_filter_half_1_1: 50 on CoreVAClusterChannel
+        wait read fir_filter_half_1_2: 13 on MemoryChannel2
+        wait read fir_filter_half_1_3: 50 on CoreVAClusterChannel
+        wait read fir_filter_half_1_4: 50 on CoreVAClusterChannel
+        wait read fir_filter_half_1_5: 50 on CoreVAClusterChannel
+        wait read fir_filter_half_1_6: 50 on CoreVAClusterChannel
+        wait read fir_filter_half_1_7: 50 on CoreVAClusterChannel
+        wait read fir_filter_half_2_1: 50 on CoreVAClusterChannel
+        wait read fir_filter_half_2_2: 50 on CoreVAClusterChannel
+        wait read fir_filter_half_2_3: 50 on CoreVAClusterChannel
+        wait read fir_filter_half_2_4: 13 on MemoryChannel2
+        wait read fir_filter_half_2_5: 50 on CoreVAClusterChannel
+        wait read fir_filter_half_2_6: 50 on CoreVAClusterChannel
+        wait read fir_filter_half_2_7: 50 on CoreVAClusterChannel
+        wait write file: 29 on CoreVAFileOutputChannel
+        wait write FileWriter_1: 0 on FileWriterMergeBuffer
+        work: 0
+        done read fir_filter_half_1_1: 24 on CoreVAClusterChannel
+        done read fir_filter_half_1_2: 1 on MemoryChannel2
+        done read fir_filter_half_1_3: 24 on CoreVAClusterChannel
+        done read fir_filter_half_1_4: 24 on CoreVAClusterChannel
+        done read fir_filter_half_1_5: 24 on CoreVAClusterChannel
+        done read fir_filter_half_1_6: 24 on CoreVAClusterChannel
+        done read fir_filter_half_1_7: 24 on CoreVAClusterChannel
+        done read fir_filter_half_2_1: 24 on CoreVAClusterChannel
+        done read fir_filter_half_2_2: 24 on CoreVAClusterChannel
+        done read fir_filter_half_2_3: 24 on CoreVAClusterChannel
+        done read fir_filter_half_2_4: 1 on MemoryChannel2
+        done read fir_filter_half_2_5: 24 on CoreVAClusterChannel
+        done read fir_filter_half_2_6: 24 on CoreVAClusterChannel
+        done read fir_filter_half_2_7: 24 on CoreVAClusterChannel
+        done write file: 34 on CoreVAFileOutputChannel
+    total: 1379
+cpu_0_0_3
+    fir_filter_half_1_1
+        wait read chunk2symbol_1_1: 50 on CoreVAClusterChannel
+        wait write FileWriter_1: 20 on CoreVAClusterChannel
+        work: 151
+        done read chunk2symbol_1_1: 24 on CoreVAClusterChannel
+        done write FileWriter_1: 21 on CoreVAClusterChannel
+    fir_filter_half_1_5
+        wait read chunk2symbol_1_2: 50 on CoreVAClusterChannel
+        wait read chunk2symbol_1_3: 50 on CoreVAClusterChannel
+        wait read fir_filter_half_1_5: 0 on SimpleMergeSplitBuffer
+        wait write FileWriter_1: 20 on CoreVAClusterChannel
+        work: 75
+        done read chunk2symbol_1_2: 24 on CoreVAClusterChannel
+        done read chunk2symbol_1_3: 24 on CoreVAClusterChannel
+        done write FileWriter_1: 21 on CoreVAClusterChannel
+    total: 530
+cpu_0_0_4
+    fir_filter_half_1_3
+        wait read chunk2symbol_1_2: 50 on CoreVAClusterChannel
+        wait write FileWriter_1: 20 on CoreVAClusterChannel
+        work: 75
+        done read chunk2symbol_1_2: 24 on CoreVAClusterChannel
+        done write FileWriter_1: 21 on CoreVAClusterChannel
+    fir_filter_half_1_4
+        wait read chunk2symbol_1_2: 50 on CoreVAClusterChannel
+        wait write FileWriter_1: 20 on CoreVAClusterChannel
+        work: 75
+        done read chunk2symbol_1_2: 24 on CoreVAClusterChannel
+        done write FileWriter_1: 21 on CoreVAClusterChannel
+    total: 380
+cpu_0_0_5
+    fir_filter_half_2_1
+        wait read chunk2symbol_1_1: 50 on CoreVAClusterChannel
+        wait write FileWriter_1: 20 on CoreVAClusterChannel
+        work: 151
+        done read chunk2symbol_1_1: 24 on CoreVAClusterChannel
+        done write FileWriter_1: 21 on CoreVAClusterChannel
+    fir_filter_half_2_5
+        wait read chunk2symbol_1_2: 50 on CoreVAClusterChannel
+        wait read chunk2symbol_1_3: 50 on CoreVAClusterChannel
+        wait read fir_filter_half_2_5: 0 on SimpleMergeSplitBuffer
+        wait write FileWriter_1: 20 on CoreVAClusterChannel
+        work: 75
+        done read chunk2symbol_1_2: 24 on CoreVAClusterChannel
+        done read chunk2symbol_1_3: 24 on CoreVAClusterChannel
+        done write FileWriter_1: 21 on CoreVAClusterChannel
+    total: 530
+cpu_0_0_6
+    fir_filter_half_1_6
+        wait read chunk2symbol_1_3: 50 on CoreVAClusterChannel
+        wait write FileWriter_1: 20 on CoreVAClusterChannel
+        work: 75
+        done read chunk2symbol_1_3: 24 on CoreVAClusterChannel
+        done write FileWriter_1: 21 on CoreVAClusterChannel
+    fir_filter_half_2_6
+        wait read chunk2symbol_1_3: 50 on CoreVAClusterChannel
+        wait write FileWriter_1: 20 on CoreVAClusterChannel
+        work: 75
+        done read chunk2symbol_1_3: 24 on CoreVAClusterChannel
+        done write FileWriter_1: 21 on CoreVAClusterChannel
+    total: 380
+cpu_0_0_7
+    fir_filter_half_1_7
+        wait read chunk2symbol_1_1: 50 on CoreVAClusterChannel
+        wait read chunk2symbol_1_3: 50 on CoreVAClusterChannel
+        wait read fir_filter_half_1_7: 0 on SimpleMergeSplitBuffer
+        wait write FileWriter_1: 20 on CoreVAClusterChannel
+        work: 75
+        done read chunk2symbol_1_1: 24 on CoreVAClusterChannel
+        done read chunk2symbol_1_3: 24 on CoreVAClusterChannel
+        done write FileWriter_1: 21 on CoreVAClusterChannel
+    fir_filter_half_2_7
+        wait read chunk2symbol_1_1: 50 on CoreVAClusterChannel
+        wait read chunk2symbol_1_3: 50 on CoreVAClusterChannel
+        wait read fir_filter_half_2_7: 0 on SimpleMergeSplitBuffer
+        wait write FileWriter_1: 20 on CoreVAClusterChannel
+        work: 75
+        done read chunk2symbol_1_1: 24 on CoreVAClusterChannel
+        done read chunk2symbol_1_3: 24 on CoreVAClusterChannel
+        done write FileWriter_1: 21 on CoreVAClusterChannel
+    total: 528
+throughput: 2357 cycles/iteration (multiplicity 1, outputItems: 128, filters: 21) ..Debug: link bottlenect = 142

@@ -1,0 +1,36 @@
+pipeline
+  filter 0 intSource
+  pipeline
+    splitjoin
+      pipeline
+        splitjoin
+          filter 1 Identity
+          filter 2 Identity
+        splitjoin
+          filter 3 Identity
+          filter 4 Identity
+      pipeline
+        splitjoin
+          filter 5 Identity
+          filter 6 Identity
+          filter 7 Identity
+          filter 8 Identity
+          filter 9 Identity
+          filter 10 Identity
+          filter 11 Identity
+          filter 12 Identity
+        splitjoin
+          filter 13 Identity
+          filter 14 Identity
+        splitjoin
+          filter 15 Identity
+          filter 16 Identity
+    filter 17 BlockMultiply
+    filter 18 BlockAdd
+    pipeline
+      splitjoin
+        filter 19 Identity
+        filter 20 Identity
+        filter 21 Identity
+        filter 22 Identity
+  filter 23 FileWriter

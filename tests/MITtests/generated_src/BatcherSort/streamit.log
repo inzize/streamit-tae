@@ -1,0 +1,33 @@
+08:35:02 INFO    Compile :: /home/coreva/coreva_dev/streamit/tests/MITtests/BatcherSort.str
+08:35:02 INFO    Compile :: Arguments: [-xml=config/mpsoc_1x1x8.xml, -part=taeILP:sim, -savepart, -merge, -maxmult=1, -resa=2, -satimeout=60, --memlayout=local, --create-timeline=tests/MITtests/generated_src//BatcherSort/sim/trace/, tests/MITtests/BatcherSort.str]
+08:35:09 INFO    Partition :: part_time: 1,485 [ms]
+08:35:09 INFO    Partition :: estimated throughput: 37,925.926 [OutputItems/MCycles]
+08:35:09 INFO    Partition :: bottleneck: cpu_0_0_5 (BatcherPipe_1_1:2259, IntSource_1:1116)
+08:35:16 INFO    Partition :: evaluator_time Old: 405306 [ns]
+08:35:18 INFO    Partition :: filter_cnt: 10
+08:35:18 INFO    Partition :: global_mult: 8
+08:35:18 INFO    Partition :: root_mult: 1
+08:35:18 INFO    printMemStat :: mem_usage: 
+			cpu_0_0_0: 4344 byte (0.42421874%)
+			cpu_0_0_1: 4344 byte (0.42421874%)
+			cpu_0_0_2: 4344 byte (0.42421874%)
+			cpu_0_0_3: 4344 byte (0.42421874%)
+			cpu_0_0_4: 4344 byte (0.42421874%)
+			cpu_0_0_5: 5404 byte (0.5277344%)
+			cpu_0_0_6: 4344 byte (0.42421874%)
+			cpu_0_0_7: 6872 byte (0.67109376%)
+08:35:18 INFO    printCommStat :: steady state: 3,375 cycle
+08:35:18 INFO    printCommStat :: output_rate: 1.2136 bit/cycle
+08:35:18 INFO    printCommStat :: link_communication:
+			( 0, 0) LNK_BUS     :   896 byte, 2.1239 bit/cycle
+08:35:18 INFO    printCommStat :: filter_communication:
+			IntSource_1         : in:     0 byte, out:   512 byte
+			BatcherPipe_1_1     : in:    64 byte, out:    64 byte
+			BatcherPipe_1_2     : in:    64 byte, out:    64 byte
+			BatcherPipe_1_3     : in:    64 byte, out:    64 byte
+			BatcherPipe_1_4     : in:    64 byte, out:    64 byte
+			BatcherPipe_1_5     : in:    64 byte, out:    64 byte
+			BatcherPipe_1_6     : in:    64 byte, out:    64 byte
+			BatcherPipe_1_7     : in:    64 byte, out:    64 byte
+			BatcherPipe_1_8     : in:    64 byte, out:    64 byte
+			IntPrinter_1        : in:   512 byte, out:     0 byte

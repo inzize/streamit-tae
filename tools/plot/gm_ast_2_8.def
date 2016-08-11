@@ -1,0 +1,6 @@
+title=gm with ast
+speedup=1
+xmlmpsocconfig2xmlpartgmast: 2 cores
+xmlmpsocconfig4xmlpartgmast: 4 cores
+xmlmpsocconfig6xmlpartgmast: 6 cores
+xmlmpsocconfig8xmlpartgmast: 8 cores

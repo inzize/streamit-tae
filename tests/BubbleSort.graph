@@ -1,0 +1,20 @@
+pipeline
+  filter 0 FileReader
+  pipeline
+    filter 1 Bubble
+    filter 2 Bubble
+    filter 3 Bubble
+    filter 4 Bubble
+    filter 5 Bubble
+    filter 6 Bubble
+    filter 7 Bubble
+    filter 8 Bubble
+    filter 9 Bubble
+    filter 10 Bubble
+    filter 11 Bubble
+    filter 12 Bubble
+    filter 13 Bubble
+    filter 14 Bubble
+    filter 15 Bubble
+    filter 16 Bubble
+  filter 17 FileWriter

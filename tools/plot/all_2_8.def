@@ -1,0 +1,12 @@
+title=all
+speedup=1
+xmlmpsocconfig2xmlpartgmast:2 gm
+xmlmpsocconfig8xmlpartgmast:8 gm
+xmlmpsocconfig2xmlpartast:2 a ast
+xmlmpsocconfig8xmlpartast:8 a ast
+xmlmpsocconfig2xmlpartsim:2 a sim
+xmlmpsocconfig8xmlpartsim:8 a sim
+xmlmpsocconfig2xmlpartgreedyast:2 g ast
+xmlmpsocconfig8xmlpartgreedyast:8 g ast
+xmlmpsocconfig2xmlpartgreedysim:2 g sim
+xmlmpsocconfig8xmlpartgreedysim:8 g sim

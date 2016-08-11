@@ -1,0 +1,31 @@
+digraph prof {
+ratio=fill; margin=0; nodesep=0.25; ranksep=0.5;
+node [style=filled; fillcolor="#EEEEEE"; shape=box; fontname="arial"];
+edge [fontname="arial"; fontsize=9;];
+IntSource_1[label=<<FONT POINT-SIZE="12">IntSource_1</FONT><BR/><FONT POINT-SIZE="9">work: 1116</FONT><BR/><FONT POINT-SIZE="9">in: 0 out: 128</FONT><BR/><FONT POINT-SIZE="9">init mult: 0</FONT><BR/><FONT POINT-SIZE="9">peek: 0 pop: 0 push: 1 nsteady: 128</FONT>>;];
+BatcherPipe_1_1[color="#1111EE";label=<<FONT POINT-SIZE="12">BatcherPipe_1_1</FONT><BR/><FONT POINT-SIZE="9">work: 2259</FONT><BR/><FONT POINT-SIZE="9">in: 16 out: 16</FONT><BR/><FONT POINT-SIZE="9">init mult: 0</FONT><BR/><FONT POINT-SIZE="9">peek: 16 pop: 16 push: 16 nsteady: 1</FONT>>;];
+IntSource_1 -> BatcherPipe_1_1;
+BatcherPipe_1_2[color="#1111EE";label=<<FONT POINT-SIZE="12">BatcherPipe_1_2</FONT><BR/><FONT POINT-SIZE="9">work: 2319</FONT><BR/><FONT POINT-SIZE="9">in: 16 out: 16</FONT><BR/><FONT POINT-SIZE="9">init mult: 0</FONT><BR/><FONT POINT-SIZE="9">peek: 16 pop: 16 push: 16 nsteady: 1</FONT>>;];
+IntSource_1 -> BatcherPipe_1_2;
+BatcherPipe_1_3[color="#1111EE";label=<<FONT POINT-SIZE="12">BatcherPipe_1_3</FONT><BR/><FONT POINT-SIZE="9">work: 2292</FONT><BR/><FONT POINT-SIZE="9">in: 16 out: 16</FONT><BR/><FONT POINT-SIZE="9">init mult: 0</FONT><BR/><FONT POINT-SIZE="9">peek: 16 pop: 16 push: 16 nsteady: 1</FONT>>;];
+IntSource_1 -> BatcherPipe_1_3;
+BatcherPipe_1_4[color="#1111EE";label=<<FONT POINT-SIZE="12">BatcherPipe_1_4</FONT><BR/><FONT POINT-SIZE="9">work: 2319</FONT><BR/><FONT POINT-SIZE="9">in: 16 out: 16</FONT><BR/><FONT POINT-SIZE="9">init mult: 0</FONT><BR/><FONT POINT-SIZE="9">peek: 16 pop: 16 push: 16 nsteady: 1</FONT>>;];
+IntSource_1 -> BatcherPipe_1_4;
+BatcherPipe_1_5[color="#1111EE";label=<<FONT POINT-SIZE="12">BatcherPipe_1_5</FONT><BR/><FONT POINT-SIZE="9">work: 2319</FONT><BR/><FONT POINT-SIZE="9">in: 16 out: 16</FONT><BR/><FONT POINT-SIZE="9">init mult: 0</FONT><BR/><FONT POINT-SIZE="9">peek: 16 pop: 16 push: 16 nsteady: 1</FONT>>;];
+IntSource_1 -> BatcherPipe_1_5;
+BatcherPipe_1_6[color="#1111EE";label=<<FONT POINT-SIZE="12">BatcherPipe_1_6</FONT><BR/><FONT POINT-SIZE="9">work: 2319</FONT><BR/><FONT POINT-SIZE="9">in: 16 out: 16</FONT><BR/><FONT POINT-SIZE="9">init mult: 0</FONT><BR/><FONT POINT-SIZE="9">peek: 16 pop: 16 push: 16 nsteady: 1</FONT>>;];
+IntSource_1 -> BatcherPipe_1_6;
+BatcherPipe_1_7[color="#1111EE";label=<<FONT POINT-SIZE="12">BatcherPipe_1_7</FONT><BR/><FONT POINT-SIZE="9">work: 2319</FONT><BR/><FONT POINT-SIZE="9">in: 16 out: 16</FONT><BR/><FONT POINT-SIZE="9">init mult: 0</FONT><BR/><FONT POINT-SIZE="9">peek: 16 pop: 16 push: 16 nsteady: 1</FONT>>;];
+IntSource_1 -> BatcherPipe_1_7;
+BatcherPipe_1_8[color="#1111EE";label=<<FONT POINT-SIZE="12">BatcherPipe_1_8</FONT><BR/><FONT POINT-SIZE="9">work: 2319</FONT><BR/><FONT POINT-SIZE="9">in: 16 out: 16</FONT><BR/><FONT POINT-SIZE="9">init mult: 0</FONT><BR/><FONT POINT-SIZE="9">peek: 16 pop: 16 push: 16 nsteady: 1</FONT>>;];
+IntSource_1 -> BatcherPipe_1_8;
+IntPrinter_1[label=<<FONT POINT-SIZE="12">IntPrinter_1</FONT><BR/><FONT POINT-SIZE="9">work: 926</FONT><BR/><FONT POINT-SIZE="9">in: 128 out: 0</FONT><BR/><FONT POINT-SIZE="9">init mult: 0</FONT><BR/><FONT POINT-SIZE="9">peek: 1 pop: 1 push: 0 nsteady: 128</FONT>>;];
+BatcherPipe_1_1 -> IntPrinter_1;
+BatcherPipe_1_2 -> IntPrinter_1;
+BatcherPipe_1_3 -> IntPrinter_1;
+BatcherPipe_1_4 -> IntPrinter_1;
+BatcherPipe_1_5 -> IntPrinter_1;
+BatcherPipe_1_6 -> IntPrinter_1;
+BatcherPipe_1_7 -> IntPrinter_1;
+BatcherPipe_1_8 -> IntPrinter_1;
+}

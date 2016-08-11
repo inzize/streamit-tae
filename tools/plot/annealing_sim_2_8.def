@@ -1,0 +1,6 @@
+title=annealing with simulator
+speedup=1
+xmlmpsocconfig2xmlpartsim: 2 cores
+xmlmpsocconfig4xmlpartsim: 4 cores
+xmlmpsocconfig6xmlpartsim: 6 cores
+xmlmpsocconfig8xmlpartsim: 8 cores

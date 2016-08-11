@@ -1,0 +1,67 @@
+void->void pipeline FilterChainSplitJoin {
+    add f1(1,0);
+    add f2();
+    add f3(3,0);
+}
+
+static {
+	int prework_push	= 0;
+	int prework_pop		= 0;
+	int prework_peek	= 0;
+	int steady_pushpop	= 0;
+	int steady_peek		= 0;
+}
+
+void->int filter f1(int s_pushpop, int s_peek) {
+    int num;
+    work push s_pushpop pop 0 {
+		for (int i = 0; i < s_pushpop; i++) {
+			push(num);
+			num++;
+		}
+    }
+}
+
+int->int pipeline f2 {
+	add f2_01();
+	add f2_04(5,0);
+}
+
+int->int splitjoin f2_01 {
+	split duplicate;
+	add f2_02();
+	add f2_02();
+	join roundrobin;
+}
+
+int->int pipeline f2_02 {
+	add f2_03(7,0);
+}
+
+int->int filter f2_03(int s_pushpop, int s_peek) {
+	work push s_pushpop pop s_pushpop {
+		for (int i = 0; i < s_pushpop; i++) {
+			push(pop());
+		}	
+	}
+}
+
+int->int filter f2_04(int s_pushpop, int s_peek) {
+	work push s_pushpop pop s_pushpop {
+		for (int i = 0; i < s_pushpop; i++) {
+			push(pop());
+		}	
+	}
+}
+
+int->void filter f3(int s_pushpop, int s_peek) {
+    work push 0 pop s_pushpop {
+		for (int i = 0; i < s_pushpop; i++) {
+			print(pop());
+			print("  ");
+		}
+		println("");
+    }
+}
+
+

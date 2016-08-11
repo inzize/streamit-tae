@@ -1,0 +1,44 @@
+pipeline
+  filter 0 FileReader
+  pipeline
+    splitjoin
+      pipeline
+        splitjoin
+          filter 1 Identity
+          filter 2 Identity
+          filter 3 Identity
+          filter 4 Identity
+          filter 5 Identity
+          filter 6 Identity
+          filter 7 Identity
+          filter 8 Identity
+      pipeline
+        splitjoin
+          filter 9 Identity
+          filter 10 Identity
+          filter 11 Identity
+          filter 12 Identity
+          filter 13 Identity
+          filter 14 Identity
+          filter 15 Identity
+          filter 16 Identity
+        pipeline
+          splitjoin
+            filter 17 Identity
+            filter 18 Identity
+            filter 19 Identity
+            filter 20 Identity
+            filter 21 Identity
+            filter 22 Identity
+            filter 23 Identity
+            filter 24 Identity
+    splitjoin
+      filter 25 MultiplyAccumulate
+      filter 26 MultiplyAccumulate
+      filter 27 MultiplyAccumulate
+      filter 28 MultiplyAccumulate
+      filter 29 MultiplyAccumulate
+      filter 30 MultiplyAccumulate
+      filter 31 MultiplyAccumulate
+      filter 32 MultiplyAccumulate
+  filter 33 FileWriter

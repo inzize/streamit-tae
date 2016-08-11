@@ -1,0 +1,25 @@
+digraph prof {
+ratio=fill; margin=0; nodesep=0.25; ranksep=0.5;
+node [style=filled; fillcolor="#EEEEEE"; shape=box; fontname="arial"];
+edge [fontname="arial"; fontsize=9;];
+VectSource_1[label=<<FONT POINT-SIZE="12">VectSource_1</FONT><BR/><FONT POINT-SIZE="9">work: 341</FONT><BR/><FONT POINT-SIZE="9">in: 0 out: 12</FONT><BR/><FONT POINT-SIZE="9">init mult: 0</FONT><BR/><FONT POINT-SIZE="9">peek: 0 pop: 0 push: 1 nsteady: 12</FONT>>;];
+VectAddKernel_1_1[color="#1111EE";label=<<FONT POINT-SIZE="12">VectAddKernel_1_1</FONT><BR/><FONT POINT-SIZE="9">work: 126</FONT><BR/><FONT POINT-SIZE="9">in: 2 out: 1</FONT><BR/><FONT POINT-SIZE="9">init mult: 0</FONT><BR/><FONT POINT-SIZE="9">peek: 2 pop: 2 push: 1 nsteady: 1</FONT>>;];
+VectSource_1 -> VectAddKernel_1_1;
+VectAddKernel_1_2[color="#1111EE";label=<<FONT POINT-SIZE="12">VectAddKernel_1_2</FONT><BR/><FONT POINT-SIZE="9">work: 126</FONT><BR/><FONT POINT-SIZE="9">in: 2 out: 1</FONT><BR/><FONT POINT-SIZE="9">init mult: 0</FONT><BR/><FONT POINT-SIZE="9">peek: 2 pop: 2 push: 1 nsteady: 1</FONT>>;];
+VectSource_1 -> VectAddKernel_1_2;
+VectAddKernel_1_3[color="#1111EE";label=<<FONT POINT-SIZE="12">VectAddKernel_1_3</FONT><BR/><FONT POINT-SIZE="9">work: 126</FONT><BR/><FONT POINT-SIZE="9">in: 2 out: 1</FONT><BR/><FONT POINT-SIZE="9">init mult: 0</FONT><BR/><FONT POINT-SIZE="9">peek: 2 pop: 2 push: 1 nsteady: 1</FONT>>;];
+VectSource_1 -> VectAddKernel_1_3;
+VectAddKernel_1_4[color="#1111EE";label=<<FONT POINT-SIZE="12">VectAddKernel_1_4</FONT><BR/><FONT POINT-SIZE="9">work: 126</FONT><BR/><FONT POINT-SIZE="9">in: 2 out: 1</FONT><BR/><FONT POINT-SIZE="9">init mult: 0</FONT><BR/><FONT POINT-SIZE="9">peek: 2 pop: 2 push: 1 nsteady: 1</FONT>>;];
+VectSource_1 -> VectAddKernel_1_4;
+VectAddKernel_1_5[color="#1111EE";label=<<FONT POINT-SIZE="12">VectAddKernel_1_5</FONT><BR/><FONT POINT-SIZE="9">work: 126</FONT><BR/><FONT POINT-SIZE="9">in: 2 out: 1</FONT><BR/><FONT POINT-SIZE="9">init mult: 0</FONT><BR/><FONT POINT-SIZE="9">peek: 2 pop: 2 push: 1 nsteady: 1</FONT>>;];
+VectSource_1 -> VectAddKernel_1_5;
+VectAddKernel_1_6[color="#1111EE";label=<<FONT POINT-SIZE="12">VectAddKernel_1_6</FONT><BR/><FONT POINT-SIZE="9">work: 126</FONT><BR/><FONT POINT-SIZE="9">in: 2 out: 1</FONT><BR/><FONT POINT-SIZE="9">init mult: 0</FONT><BR/><FONT POINT-SIZE="9">peek: 2 pop: 2 push: 1 nsteady: 1</FONT>>;];
+VectSource_1 -> VectAddKernel_1_6;
+VectPrinter_1[label=<<FONT POINT-SIZE="12">VectPrinter_1</FONT><BR/><FONT POINT-SIZE="9">work: 463</FONT><BR/><FONT POINT-SIZE="9">in: 6 out: 0</FONT><BR/><FONT POINT-SIZE="9">init mult: 0</FONT><BR/><FONT POINT-SIZE="9">peek: 1 pop: 1 push: 0 nsteady: 6</FONT>>;];
+VectAddKernel_1_1 -> VectPrinter_1;
+VectAddKernel_1_2 -> VectPrinter_1;
+VectAddKernel_1_3 -> VectPrinter_1;
+VectAddKernel_1_4 -> VectPrinter_1;
+VectAddKernel_1_5 -> VectPrinter_1;
+VectAddKernel_1_6 -> VectPrinter_1;
+}

@@ -1,0 +1,7 @@
+
+tests: (-xml=config/mpsoc_1x1x8.xml -part=taeILP:sim -savepart -merge -maxmult=1 -resa=2 -satimeout=60 --memlayout=local)
+          program          |      build      |       run       |        compare        |
+                           | [4ms[24meq | [4mp[24mth | [4mc[24mva | seq | pth | cva | s-r | s-p | p-c | s-c | 
+Sender80211                |  [32m[1m+(B[m  |  [32m[1m+(B[m  |  [32m[1m+(B[m  |  [32m[1m+(B[m  |  [32m[1m+(B[m  |  [32m[1m+(B[m  |  [32m[1m+(B[m  |  [31m[1m-(B[m  |  [31m[1m-(B[m  |  [31m[1m-(B[m  | coreva-vm | cfg1x1x8taeILPsimsavepartmergemaxmult1resa2satimeout60memlayoutlocal
+                       | s-p | p-c | s-c |
+Tests successful       |   0 |   0 |   0 |

@@ -1,0 +1,43 @@
+void->void pipeline FilterChain {
+    add f1();
+    add f2();
+    add f3();
+}
+
+static {
+	int prework_push		= 0;
+	int prework_pop		= 0;
+	int prework_peek		= 0;
+	int steady_pushpop	= 0;
+	int steady_peek		= 0;
+}
+
+void->int filter f1 {    
+    int num;
+    work push 2 {
+		for (int i = 0; i < 2; i++) {
+			push(num);
+			num++;
+		}
+    }
+}
+
+int->int filter f2 {
+	work push 5 pop 5 {
+		for (int i = 0; i < 5; i++) {
+			push(pop());
+		}	
+	}
+}
+
+int->void filter f3 {
+    work pop 3 {
+		for (int i = 0; i < 3; i++) {
+			print(pop());
+			print("  ");
+		}
+		println("");
+    }
+}
+
+

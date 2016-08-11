@@ -1,0 +1,31 @@
+void->void pipeline pipeline3
+{
+	add filter1;
+	add filter2;
+	add filter3;	
+}
+
+void->int filter filter1
+{
+	int x = 0;
+	work push 1
+	{
+		push(x++);
+	}
+}
+
+int->int filter filter2
+{
+	work pop 1 push 1
+	{
+		push(pop());
+	}
+}
+
+int->void filter filter3
+{
+	work pop 1
+	{
+		println(pop());
+	}
+}

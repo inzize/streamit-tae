@@ -1,0 +1,12 @@
+pipeline
+  filter 0 FileReader
+  splitjoin
+    filter 1 anonFilter0
+    filter 2 anonFilter0
+    filter 3 anonFilter0
+    filter 4 anonFilter0
+    filter 5 anonFilter0
+    filter 6 anonFilter0
+    filter 7 anonFilter0
+    filter 8 anonFilter0
+  filter 9 FileWriter

@@ -1,0 +1,30 @@
+void->void pipeline Tabelle1
+{
+	add Producer;
+	add Consumer;
+}
+
+void->int filter Producer
+{
+	int x = 1;
+	prework push 11
+	{
+		for (int i=0; i<11; i++)
+			push(x++);
+	}
+	
+	work push 3
+	{
+		for (int i=0; i<3; i++)
+			push(x++);		
+	}
+}
+
+int->void filter Consumer
+{
+	work pop 3
+	{
+		for (int i=0; i<3; i++)
+			println(pop());		
+	}
+}

@@ -1,0 +1,42 @@
+pipeline
+  filter 0 FileReader
+  pipeline
+    pipeline
+      splitjoin
+        filter 1 CompareExchange
+        filter 2 CompareExchange
+        filter 3 CompareExchange
+        filter 4 CompareExchange
+    pipeline
+      splitjoin
+        splitjoin
+          filter 5 CompareExchange
+          filter 6 CompareExchange
+        splitjoin
+          filter 7 CompareExchange
+          filter 8 CompareExchange
+      splitjoin
+        filter 9 CompareExchange
+        filter 10 CompareExchange
+        filter 11 CompareExchange
+        filter 12 CompareExchange
+    pipeline
+      splitjoin
+        splitjoin
+          filter 13 CompareExchange
+          filter 14 CompareExchange
+          filter 15 CompareExchange
+          filter 16 CompareExchange
+      splitjoin
+        splitjoin
+          filter 17 CompareExchange
+          filter 18 CompareExchange
+        splitjoin
+          filter 19 CompareExchange
+          filter 20 CompareExchange
+      splitjoin
+        filter 21 CompareExchange
+        filter 22 CompareExchange
+        filter 23 CompareExchange
+        filter 24 CompareExchange
+  filter 25 FileWriter

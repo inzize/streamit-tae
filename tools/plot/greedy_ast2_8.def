@@ -1,0 +1,6 @@
+title=greedy with ast
+speedup=1
+xmlmpsocconfig2xmlpartgreedyast: 2 cores
+xmlmpsocconfig4xmlpartgreedyast: 4 cores
+xmlmpsocconfig6xmlpartgreedyast: 6 cores
+xmlmpsocconfig8xmlpartgreedyast: 8 cores

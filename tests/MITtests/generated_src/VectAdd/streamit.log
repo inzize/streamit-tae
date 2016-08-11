@@ -1,0 +1,31 @@
+08:38:59 INFO    Compile :: /home/coreva/coreva_dev/streamit/tests/MITtests/VectAdd.str
+08:38:59 INFO    Compile :: Arguments: [-xml=config/mpsoc_1x1x8.xml, -part=taeILP:sim, -savepart, -merge, -maxmult=1, -resa=2, -satimeout=60, --memlayout=local, --create-timeline=tests/MITtests/generated_src//VectAdd/sim/trace/, tests/MITtests/VectAdd.str]
+08:39:05 INFO    Partition :: part_time: 1,437 [ms]
+08:39:05 INFO    Partition :: estimated throughput: 12,958.963 [OutputItems/MCycles]
+08:39:05 INFO    Partition :: bottleneck: cpu_0_0_1 (VectPrinter_1:463)
+08:39:08 INFO    Partition :: evaluator_time Old: 472614 [ns]
+08:39:14 INFO    Partition :: filter_cnt: 8
+08:39:15 INFO    Partition :: global_mult: 6
+08:39:15 INFO    Partition :: root_mult: 1
+08:39:15 INFO    printMemStat :: mem_usage: 
+			cpu_0_0_0: 4084 byte (0.39882812%)
+			cpu_0_0_1: 4508 byte (0.44023436%)
+			cpu_0_0_2: 4084 byte (0.39882812%)
+			cpu_0_0_3: 4464 byte (0.4359375%)
+			cpu_0_0_4: 4084 byte (0.39882812%)
+			cpu_0_0_5: 4084 byte (0.39882812%)
+			cpu_0_0_6: 4084 byte (0.39882812%)
+			cpu_0_0_7: 4084 byte (0.39882812%)
+08:39:15 INFO    printCommStat :: steady state: 463 cycle
+08:39:15 INFO    printCommStat :: output_rate: 0.4147 bit/cycle
+08:39:15 INFO    printCommStat :: link_communication:
+			( 0, 0) LNK_BUS     :    72 byte, 1.2441 bit/cycle
+08:39:15 INFO    printCommStat :: filter_communication:
+			VectSource_1        : in:     0 byte, out:    48 byte
+			VectAddKernel_1_1   : in:     8 byte, out:     4 byte
+			VectAddKernel_1_2   : in:     8 byte, out:     4 byte
+			VectAddKernel_1_3   : in:     8 byte, out:     4 byte
+			VectAddKernel_1_4   : in:     8 byte, out:     4 byte
+			VectAddKernel_1_5   : in:     8 byte, out:     4 byte
+			VectAddKernel_1_6   : in:     8 byte, out:     4 byte
+			VectPrinter_1       : in:    24 byte, out:     0 byte

@@ -1,0 +1,43 @@
+void->void pipeline PeekFissTest
+{
+	add filter1;
+	add filter2;
+	add filter3;
+	add filter4;	
+}
+
+void->int filter filter1
+{
+	int x = 0;
+	work push 1
+	{
+		push(x++);
+	}
+}
+
+int->int filter filter2
+{
+	work pop 1 push 1
+	{
+		push(pop());
+	}
+}
+
+int->int filter filter3
+{
+	work pop 3 push 4 peek 4
+	{
+		push(pop());
+		push(pop());
+		push(pop());
+		push(peek(0));
+	}
+}
+
+int->void filter filter4
+{
+	work pop 1
+	{
+		println(pop());
+	}
+}

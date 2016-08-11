@@ -1,0 +1,6 @@
+title=annealing with ast
+speedup=1
+xmlmpsocconfig2xmlpartast: 2 cores
+xmlmpsocconfig4xmlpartast: 4 cores
+xmlmpsocconfig6xmlpartast: 6 cores
+xmlmpsocconfig8xmlpartast: 8 cores

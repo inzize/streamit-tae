@@ -1,0 +1,4 @@
+pipeline
+  filter 0 VectSource
+  filter 1 VectAddKernel
+  filter 2 VectPrinter

@@ -1,0 +1,4 @@
+pipeline
+  filter 0 IntSource
+  filter 1 BatcherPipe
+  filter 2 IntPrinter

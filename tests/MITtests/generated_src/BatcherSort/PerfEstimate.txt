@@ -1,0 +1,105 @@
+cpu_0_0_0
+    BatcherPipe_1_6
+        wait read IntSource_1: 50 on CoreVAClusterChannel
+        wait write IntPrinter_1: 20 on CoreVAClusterChannel
+        work: 2204
+        done read IntSource_1: 24 on CoreVAClusterChannel
+        done write IntPrinter_1: 21 on CoreVAClusterChannel
+    total: 2319
+cpu_0_0_1
+    BatcherPipe_1_2
+        wait read IntSource_1: 50 on CoreVAClusterChannel
+        wait write IntPrinter_1: 20 on CoreVAClusterChannel
+        work: 2204
+        done read IntSource_1: 24 on CoreVAClusterChannel
+        done write IntPrinter_1: 21 on CoreVAClusterChannel
+    total: 2319
+cpu_0_0_2
+    BatcherPipe_1_4
+        wait read IntSource_1: 50 on CoreVAClusterChannel
+        wait write IntPrinter_1: 20 on CoreVAClusterChannel
+        work: 2204
+        done read IntSource_1: 24 on CoreVAClusterChannel
+        done write IntPrinter_1: 21 on CoreVAClusterChannel
+    total: 2319
+cpu_0_0_3
+    BatcherPipe_1_8
+        wait read IntSource_1: 50 on CoreVAClusterChannel
+        wait write IntPrinter_1: 20 on CoreVAClusterChannel
+        work: 2204
+        done read IntSource_1: 24 on CoreVAClusterChannel
+        done write IntPrinter_1: 21 on CoreVAClusterChannel
+    total: 2319
+cpu_0_0_4
+    BatcherPipe_1_5
+        wait read IntSource_1: 50 on CoreVAClusterChannel
+        wait write IntPrinter_1: 20 on CoreVAClusterChannel
+        work: 2204
+        done read IntSource_1: 24 on CoreVAClusterChannel
+        done write IntPrinter_1: 21 on CoreVAClusterChannel
+    total: 2319
+cpu_0_0_5
+    IntSource_1
+        wait write BatcherPipe_1_1: 13 on MemoryChannel2
+        wait write BatcherPipe_1_2: 20 on CoreVAClusterChannel
+        wait write BatcherPipe_1_3: 20 on CoreVAClusterChannel
+        wait write BatcherPipe_1_4: 20 on CoreVAClusterChannel
+        wait write BatcherPipe_1_5: 20 on CoreVAClusterChannel
+        wait write BatcherPipe_1_6: 20 on CoreVAClusterChannel
+        wait write BatcherPipe_1_7: 20 on CoreVAClusterChannel
+        wait write BatcherPipe_1_8: 20 on CoreVAClusterChannel
+        wait write IntSource_1: 4 on SimpleMergeSplitBuffer
+        work: 1
+        done write split: 405 on SimpleMergeSplitBuffer
+        done write IntSource_1: 405 on SimpleMergeSplitBuffer
+        done write BatcherPipe_1_1: 1 on MemoryChannel2
+        done write BatcherPipe_1_2: 21 on CoreVAClusterChannel
+        done write BatcherPipe_1_3: 21 on CoreVAClusterChannel
+        done write BatcherPipe_1_4: 21 on CoreVAClusterChannel
+        done write BatcherPipe_1_5: 21 on CoreVAClusterChannel
+        done write BatcherPipe_1_6: 21 on CoreVAClusterChannel
+        done write BatcherPipe_1_7: 21 on CoreVAClusterChannel
+        done write BatcherPipe_1_8: 21 on CoreVAClusterChannel
+    BatcherPipe_1_1
+        wait read IntSource_1: 13 on MemoryChannel2
+        wait write IntPrinter_1: 20 on CoreVAClusterChannel
+        work: 2204
+        done read IntSource_1: 1 on MemoryChannel2
+        done write IntPrinter_1: 21 on CoreVAClusterChannel
+    total: 3375
+cpu_0_0_6
+    BatcherPipe_1_7
+        wait read IntSource_1: 50 on CoreVAClusterChannel
+        wait write IntPrinter_1: 20 on CoreVAClusterChannel
+        work: 2204
+        done read IntSource_1: 24 on CoreVAClusterChannel
+        done write IntPrinter_1: 21 on CoreVAClusterChannel
+    total: 2319
+cpu_0_0_7
+    BatcherPipe_1_3
+        wait read IntSource_1: 50 on CoreVAClusterChannel
+        wait write IntPrinter_1: 13 on MemoryChannel2
+        work: 2204
+        done read IntSource_1: 24 on CoreVAClusterChannel
+        done write IntPrinter_1: 1 on MemoryChannel2
+    IntPrinter_1
+        wait read BatcherPipe_1_1: 50 on CoreVAClusterChannel
+        wait read BatcherPipe_1_2: 50 on CoreVAClusterChannel
+        wait read BatcherPipe_1_3: 13 on MemoryChannel2
+        wait read BatcherPipe_1_4: 50 on CoreVAClusterChannel
+        wait read BatcherPipe_1_5: 50 on CoreVAClusterChannel
+        wait read BatcherPipe_1_6: 50 on CoreVAClusterChannel
+        wait read BatcherPipe_1_7: 50 on CoreVAClusterChannel
+        wait read BatcherPipe_1_8: 50 on CoreVAClusterChannel
+        wait read IntPrinter_1: 393 on SimpleMergeSplitBuffer
+        work: 1
+        done read BatcherPipe_1_1: 24 on CoreVAClusterChannel
+        done read BatcherPipe_1_2: 24 on CoreVAClusterChannel
+        done read BatcherPipe_1_3: 1 on MemoryChannel2
+        done read BatcherPipe_1_4: 24 on CoreVAClusterChannel
+        done read BatcherPipe_1_5: 24 on CoreVAClusterChannel
+        done read BatcherPipe_1_6: 24 on CoreVAClusterChannel
+        done read BatcherPipe_1_7: 24 on CoreVAClusterChannel
+        done read BatcherPipe_1_8: 24 on CoreVAClusterChannel
+    total: 3218
+throughput: 3375 cycles/iteration (multiplicity 1, outputItems: 128, filters: 10) ..Debug: link bottlenect = 224

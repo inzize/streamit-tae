@@ -1,0 +1,39 @@
+void->void pipeline splitjoinroundrobin
+{
+	add filter1;
+	add filter2;
+	add filter3;	
+}
+
+void->int filter filter1
+{
+	int x = 0;
+	work push 1
+	{
+		push(x++);
+	}
+}
+
+int->int splitjoin filter2
+{
+	split roundrobin;
+	add filter2a;
+	add filter2a;
+	join roundrobin;
+}
+
+int->int filter filter2a
+{
+	work pop 1 push 1
+	{
+		push(pop());
+	}
+}
+
+int->void filter filter3
+{
+	work pop 1
+	{
+		println(pop());
+	}
+}

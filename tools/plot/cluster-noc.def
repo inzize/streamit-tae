@@ -1,0 +1,10 @@
+#title=sa with sim
+speedup=1
+xmlconfigmpsoc1x1x1xmlpartsasimsatimeout600:  1x1x1
+xmlconfigmpsoc1x1x2xmlpartsasimsatimeout600:  1x1x2
+xmlconfigmpsoc1x1x4xmlpartsasimsatimeout600:  1x1x4
+xmlconfigmpsoc1x1x8xmlpartsasimsatimeout600:  1x1x8
+#xmlconfigmpsoc2x2x2xmlpartsasimsatimeout600: 2x2x2
+xmlconfigmpsoc1x1x16xmlpartsasimsatimeout600: 1x1x16
+xmlconfigmpsoc2x1x8xmlpartsasimsatimeout600: 2x1x8
+xmlconfigmpsoc2x2x8xmlpartsasimsatimeout600: 2x2x8

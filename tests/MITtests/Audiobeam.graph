@@ -1,0 +1,25 @@
+pipeline
+  filter 0 FileReader
+  filter 1 test
+  pipeline
+    pipeline
+      splitjoin
+        pipeline
+          splitjoin
+            filter 2 anonFilter0
+            filter 3 anonFilter0
+            filter 4 anonFilter0
+            filter 5 anonFilter0
+            filter 6 anonFilter0
+            filter 7 anonFilter0
+            filter 8 anonFilter0
+            filter 9 anonFilter0
+            filter 10 anonFilter0
+            filter 11 anonFilter0
+            filter 12 anonFilter0
+            filter 13 anonFilter0
+            filter 14 anonFilter0
+            filter 15 anonFilter0
+            filter 16 anonFilter0
+          filter 17 anonFilter1
+  filter 18 FileWriter

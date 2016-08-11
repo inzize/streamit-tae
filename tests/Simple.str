@@ -1,0 +1,32 @@
+void->void pipeline simple
+{
+    add input;
+    add foo;
+    add bar;
+    add FileWriter<int>;
+}
+
+void -> int filter input
+{
+    work push 1
+    {
+        push(42);
+    }
+}
+
+int -> int filter foo
+{
+    work pop 10 push 10
+    {
+        for (int i=0; i<10; i++)
+            push(pop());
+    }
+}
+
+int -> int filter bar
+{
+    work pop 1 push 1
+    {
+        push(pop());
+    }
+}

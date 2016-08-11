@@ -1,0 +1,44 @@
+02:53:16 INFO    Compile :: /home/coreva/coreva_dev/streamit/tests/Sender80211.str
+02:53:16 INFO    Compile :: Arguments: [-xml=config/mpsoc_1x1x8.xml, -part=taeILP:sim, -savepart, -merge, -maxmult=1, -resa=2, -satimeout=60, --memlayout=local, --create-timeline=tests/generated_src//Sender80211/sim/trace/, tests/Sender80211.str]
+02:53:27 INFO    Partition :: part_time: 7,198 [ms]
+02:53:27 INFO    Partition :: estimated throughput: 54,306.322 [OutputItems/MCycles]
+02:53:27 INFO    Partition :: bottleneck: cpu_0_0_0 (FileReader_0:1084, chunk2symbol_1_2:399, chunk2symbol_1_1:313, chunk2symbol_1_3:299, diff_encode_1:193, scramble_1:69)
+02:53:30 INFO    Partition :: evaluator_time Old: 540267 [ns]
+02:53:30 INFO    Partition :: filter_cnt: 21
+02:53:30 INFO    Partition :: global_mult: 1
+02:53:30 INFO    Partition :: root_mult: 1
+02:53:31 INFO    printMemStat :: mem_usage: 
+			cpu_0_0_0: 10608 byte (1.0359375%)
+			cpu_0_0_1: 5212 byte (0.5089844%)
+			cpu_0_0_2: 7776 byte (0.759375%)
+			cpu_0_0_3: 5260 byte (0.5136719%)
+			cpu_0_0_4: 4932 byte (0.48164064%)
+			cpu_0_0_5: 5260 byte (0.5136719%)
+			cpu_0_0_6: 4932 byte (0.48164064%)
+			cpu_0_0_7: 5492 byte (0.53632814%)
+02:53:31 INFO    printCommStat :: steady state: 2,357 cycle
+02:53:31 INFO    printCommStat :: output_rate: 1.7378 bit/cycle
+02:53:31 INFO    printCommStat :: link_communication:
+			( 0, 0) LNK_BUS     :   568 byte, 1.9279 bit/cycle
+02:53:31 INFO    printCommStat :: filter_communication:
+			FileReader_0        : in:     0 byte, out:     4 byte
+			scramble_1          : in:     4 byte, out:    32 byte
+			diff_encode_1       : in:    32 byte, out:    32 byte
+			chunk2symbol_1_1    : in:    12 byte, out:    40 byte
+			chunk2symbol_1_2    : in:    12 byte, out:    48 byte
+			chunk2symbol_1_3    : in:     8 byte, out:    32 byte
+			fir_filter_half_1_1 : in:    16 byte, out:    64 byte
+			fir_filter_half_1_2 : in:    16 byte, out:    32 byte
+			fir_filter_half_1_3 : in:    12 byte, out:    32 byte
+			fir_filter_half_1_4 : in:    12 byte, out:    32 byte
+			fir_filter_half_1_5 : in:    16 byte, out:    32 byte
+			fir_filter_half_1_6 : in:    12 byte, out:    32 byte
+			fir_filter_half_1_7 : in:    16 byte, out:    32 byte
+			fir_filter_half_2_1 : in:    16 byte, out:    64 byte
+			fir_filter_half_2_2 : in:    16 byte, out:    32 byte
+			fir_filter_half_2_3 : in:    12 byte, out:    32 byte
+			fir_filter_half_2_4 : in:    12 byte, out:    32 byte
+			fir_filter_half_2_5 : in:    16 byte, out:    32 byte
+			fir_filter_half_2_6 : in:    12 byte, out:    32 byte
+			fir_filter_half_2_7 : in:    16 byte, out:    32 byte
+			FileWriter_1        : in:   512 byte, out:     0 byte

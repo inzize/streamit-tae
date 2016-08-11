@@ -1,0 +1,42 @@
+void->void pipeline SplitJoin {
+    add input();
+	add splitjoin {
+		split duplicate;
+			add f1();
+			add f2();
+		join roundrobin(32, 32);
+	}
+    add output();
+}
+
+void->int filter input {    
+    int num;
+    work push 1 {
+		push(num++);
+    }
+}
+
+int->void filter output {
+    work pop 1 {
+		println(pop());
+    }
+}
+
+int->int filter f1 {
+	work push 1 pop 1 {
+		push(pop());
+	}
+}
+
+int->int pipeline f2 {
+	add f1();
+	add f1();
+	add f1();
+	add f1();
+}
+
+
+
+
+
+

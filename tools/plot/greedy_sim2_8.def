@@ -1,0 +1,7 @@
+title=greedy with simulator
+speedup=1
+configmpsoc1x1x4greedysimsatimeout30: 2 cores
+xmlmpsocconfig2xmlpartgreedysim: 2 cores
+xmlmpsocconfig4xmlpartgreedysim: 4 cores
+xmlmpsocconfig6xmlpartgreedysim: 6 cores
+xmlmpsocconfig8xmlpartgreedysim: 8 cores

@@ -1,0 +1,8 @@
+void->void filter filter1
+{
+	int x = 0;
+	work
+	{
+		println(x++);
+	}
+}

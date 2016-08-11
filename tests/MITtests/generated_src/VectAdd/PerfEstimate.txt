@@ -1,0 +1,85 @@
+cpu_0_0_0
+    VectAddKernel_1_6
+        wait read VectSource_1: 50 on CoreVAClusterChannel
+        wait write VectPrinter_1: 20 on CoreVAClusterChannel
+        work: 11
+        done read VectSource_1: 24 on CoreVAClusterChannel
+        done write VectPrinter_1: 21 on CoreVAClusterChannel
+    total: 126
+cpu_0_0_1
+    VectPrinter_1
+        wait read VectAddKernel_1_1: 50 on CoreVAClusterChannel
+        wait read VectAddKernel_1_2: 50 on CoreVAClusterChannel
+        wait read VectAddKernel_1_3: 50 on CoreVAClusterChannel
+        wait read VectAddKernel_1_4: 50 on CoreVAClusterChannel
+        wait read VectAddKernel_1_5: 50 on CoreVAClusterChannel
+        wait read VectAddKernel_1_6: 50 on CoreVAClusterChannel
+        wait read VectPrinter_1: 18 on SimpleMergeSplitBuffer
+        work: 1
+        done read VectAddKernel_1_1: 24 on CoreVAClusterChannel
+        done read VectAddKernel_1_2: 24 on CoreVAClusterChannel
+        done read VectAddKernel_1_3: 24 on CoreVAClusterChannel
+        done read VectAddKernel_1_4: 24 on CoreVAClusterChannel
+        done read VectAddKernel_1_5: 24 on CoreVAClusterChannel
+        done read VectAddKernel_1_6: 24 on CoreVAClusterChannel
+    total: 463
+cpu_0_0_2
+    VectAddKernel_1_3
+        wait read VectSource_1: 50 on CoreVAClusterChannel
+        wait write VectPrinter_1: 20 on CoreVAClusterChannel
+        work: 11
+        done read VectSource_1: 24 on CoreVAClusterChannel
+        done write VectPrinter_1: 21 on CoreVAClusterChannel
+    total: 126
+cpu_0_0_3
+    VectSource_1
+        wait write VectAddKernel_1_1: 20 on CoreVAClusterChannel
+        wait write VectAddKernel_1_2: 20 on CoreVAClusterChannel
+        wait write VectAddKernel_1_3: 20 on CoreVAClusterChannel
+        wait write VectAddKernel_1_4: 20 on CoreVAClusterChannel
+        wait write VectAddKernel_1_5: 20 on CoreVAClusterChannel
+        wait write VectAddKernel_1_6: 20 on CoreVAClusterChannel
+        wait write VectSource_1: 4 on SimpleMergeSplitBuffer
+        work: 1
+        done write split: 45 on SimpleMergeSplitBuffer
+        done write VectSource_1: 45 on SimpleMergeSplitBuffer
+        done write VectAddKernel_1_1: 21 on CoreVAClusterChannel
+        done write VectAddKernel_1_2: 21 on CoreVAClusterChannel
+        done write VectAddKernel_1_3: 21 on CoreVAClusterChannel
+        done write VectAddKernel_1_4: 21 on CoreVAClusterChannel
+        done write VectAddKernel_1_5: 21 on CoreVAClusterChannel
+        done write VectAddKernel_1_6: 21 on CoreVAClusterChannel
+    total: 341
+cpu_0_0_4
+    VectAddKernel_1_2
+        wait read VectSource_1: 50 on CoreVAClusterChannel
+        wait write VectPrinter_1: 20 on CoreVAClusterChannel
+        work: 11
+        done read VectSource_1: 24 on CoreVAClusterChannel
+        done write VectPrinter_1: 21 on CoreVAClusterChannel
+    total: 126
+cpu_0_0_5
+    VectAddKernel_1_5
+        wait read VectSource_1: 50 on CoreVAClusterChannel
+        wait write VectPrinter_1: 20 on CoreVAClusterChannel
+        work: 11
+        done read VectSource_1: 24 on CoreVAClusterChannel
+        done write VectPrinter_1: 21 on CoreVAClusterChannel
+    total: 126
+cpu_0_0_6
+    VectAddKernel_1_1
+        wait read VectSource_1: 50 on CoreVAClusterChannel
+        wait write VectPrinter_1: 20 on CoreVAClusterChannel
+        work: 11
+        done read VectSource_1: 24 on CoreVAClusterChannel
+        done write VectPrinter_1: 21 on CoreVAClusterChannel
+    total: 126
+cpu_0_0_7
+    VectAddKernel_1_4
+        wait read VectSource_1: 50 on CoreVAClusterChannel
+        wait write VectPrinter_1: 20 on CoreVAClusterChannel
+        work: 11
+        done read VectSource_1: 24 on CoreVAClusterChannel
+        done write VectPrinter_1: 21 on CoreVAClusterChannel
+    total: 126
+throughput: 463 cycles/iteration (multiplicity 1, outputItems: 6, filters: 8) ..Debug: link bottlenect = 18

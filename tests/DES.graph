@@ -1,0 +1,110 @@
+pipeline
+  filter 0 FileReader
+  pipeline
+    filter 1 doIP
+    splitjoin
+      pipeline
+        splitjoin
+          pipeline
+            splitjoin
+              filter 2 doE
+              pipeline
+                filter 3 anonFilter3
+            filter 4 Xor
+            splitjoin
+              filter 5 Sbox
+              filter 6 Sbox
+              filter 7 Sbox
+              filter 8 Sbox
+              filter 9 Sbox
+              filter 10 Sbox
+              filter 11 Sbox
+              filter 12 Sbox
+            filter 13 doP
+          filter 14 Identity
+        filter 15 Xor
+      pipeline
+        splitjoin
+          filter 16 Identity
+          filter 17 anonFilter0
+    splitjoin
+      pipeline
+        splitjoin
+          pipeline
+            splitjoin
+              filter 18 doE
+              pipeline
+                filter 19 anonFilter3
+            filter 20 Xor
+            splitjoin
+              filter 21 Sbox
+              filter 22 Sbox
+              filter 23 Sbox
+              filter 24 Sbox
+              filter 25 Sbox
+              filter 26 Sbox
+              filter 27 Sbox
+              filter 28 Sbox
+            filter 29 doP
+          filter 30 Identity
+        filter 31 Xor
+      pipeline
+        splitjoin
+          filter 32 Identity
+          filter 33 anonFilter0
+    splitjoin
+      pipeline
+        splitjoin
+          pipeline
+            splitjoin
+              filter 34 doE
+              pipeline
+                filter 35 anonFilter3
+            filter 36 Xor
+            splitjoin
+              filter 37 Sbox
+              filter 38 Sbox
+              filter 39 Sbox
+              filter 40 Sbox
+              filter 41 Sbox
+              filter 42 Sbox
+              filter 43 Sbox
+              filter 44 Sbox
+            filter 45 doP
+          filter 46 Identity
+        filter 47 Xor
+      pipeline
+        splitjoin
+          filter 48 Identity
+          filter 49 anonFilter0
+    splitjoin
+      pipeline
+        splitjoin
+          pipeline
+            splitjoin
+              filter 50 doE
+              pipeline
+                filter 51 anonFilter3
+            filter 52 Xor
+            splitjoin
+              filter 53 Sbox
+              filter 54 Sbox
+              filter 55 Sbox
+              filter 56 Sbox
+              filter 57 Sbox
+              filter 58 Sbox
+              filter 59 Sbox
+              filter 60 Sbox
+            filter 61 doP
+          filter 62 Identity
+        filter 63 Xor
+      pipeline
+        splitjoin
+          filter 64 Identity
+          filter 65 anonFilter0
+    filter 66 CrissCross
+    filter 67 doIPm1
+  pipeline
+    filter 68 BitstoInts
+    filter 69 anonFilter1
+  filter 70 FileWriter

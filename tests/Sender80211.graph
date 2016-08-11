@@ -1,0 +1,10 @@
+pipeline
+  filter 0 FileReader
+  filter 1 scramble
+  filter 2 diff_encode
+  filter 3 chunk2symbol
+  pipeline
+    splitjoin
+      filter 4 fir_filter_half
+      filter 5 fir_filter_half
+  filter 6 FileWriter

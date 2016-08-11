@@ -1,0 +1,676 @@
+pipeline
+  filter 0 FileReader
+  pipeline
+    splitjoin
+      pipeline
+        splitjoin
+          pipeline
+            splitjoin
+              pipeline
+                splitjoin
+                  pipeline
+                    splitjoin
+                      pipeline
+                        filter 1 Identity
+                      pipeline
+                        filter 2 Identity
+                    pipeline
+                      splitjoin
+                        filter 3 CompareExchange
+                  pipeline
+                    splitjoin
+                      pipeline
+                        filter 4 Identity
+                      pipeline
+                        filter 5 Identity
+                    pipeline
+                      splitjoin
+                        filter 6 CompareExchange
+                pipeline
+                  splitjoin
+                    filter 7 CompareExchange
+                    filter 8 CompareExchange
+                  splitjoin
+                    pipeline
+                      splitjoin
+                        filter 9 CompareExchange
+                    pipeline
+                      splitjoin
+                        filter 10 CompareExchange
+              pipeline
+                splitjoin
+                  pipeline
+                    splitjoin
+                      pipeline
+                        filter 11 Identity
+                      pipeline
+                        filter 12 Identity
+                    pipeline
+                      splitjoin
+                        filter 13 CompareExchange
+                  pipeline
+                    splitjoin
+                      pipeline
+                        filter 14 Identity
+                      pipeline
+                        filter 15 Identity
+                    pipeline
+                      splitjoin
+                        filter 16 CompareExchange
+                pipeline
+                  splitjoin
+                    filter 17 CompareExchange
+                    filter 18 CompareExchange
+                  splitjoin
+                    pipeline
+                      splitjoin
+                        filter 19 CompareExchange
+                    pipeline
+                      splitjoin
+                        filter 20 CompareExchange
+            pipeline
+              splitjoin
+                filter 21 CompareExchange
+                filter 22 CompareExchange
+                filter 23 CompareExchange
+                filter 24 CompareExchange
+              splitjoin
+                pipeline
+                  splitjoin
+                    filter 25 CompareExchange
+                    filter 26 CompareExchange
+                  splitjoin
+                    pipeline
+                      splitjoin
+                        filter 27 CompareExchange
+                    pipeline
+                      splitjoin
+                        filter 28 CompareExchange
+                pipeline
+                  splitjoin
+                    filter 29 CompareExchange
+                    filter 30 CompareExchange
+                  splitjoin
+                    pipeline
+                      splitjoin
+                        filter 31 CompareExchange
+                    pipeline
+                      splitjoin
+                        filter 32 CompareExchange
+          pipeline
+            splitjoin
+              pipeline
+                splitjoin
+                  pipeline
+                    splitjoin
+                      pipeline
+                        filter 33 Identity
+                      pipeline
+                        filter 34 Identity
+                    pipeline
+                      splitjoin
+                        filter 35 CompareExchange
+                  pipeline
+                    splitjoin
+                      pipeline
+                        filter 36 Identity
+                      pipeline
+                        filter 37 Identity
+                    pipeline
+                      splitjoin
+                        filter 38 CompareExchange
+                pipeline
+                  splitjoin
+                    filter 39 CompareExchange
+                    filter 40 CompareExchange
+                  splitjoin
+                    pipeline
+                      splitjoin
+                        filter 41 CompareExchange
+                    pipeline
+                      splitjoin
+                        filter 42 CompareExchange
+              pipeline
+                splitjoin
+                  pipeline
+                    splitjoin
+                      pipeline
+                        filter 43 Identity
+                      pipeline
+                        filter 44 Identity
+                    pipeline
+                      splitjoin
+                        filter 45 CompareExchange
+                  pipeline
+                    splitjoin
+                      pipeline
+                        filter 46 Identity
+                      pipeline
+                        filter 47 Identity
+                    pipeline
+                      splitjoin
+                        filter 48 CompareExchange
+                pipeline
+                  splitjoin
+                    filter 49 CompareExchange
+                    filter 50 CompareExchange
+                  splitjoin
+                    pipeline
+                      splitjoin
+                        filter 51 CompareExchange
+                    pipeline
+                      splitjoin
+                        filter 52 CompareExchange
+            pipeline
+              splitjoin
+                filter 53 CompareExchange
+                filter 54 CompareExchange
+                filter 55 CompareExchange
+                filter 56 CompareExchange
+              splitjoin
+                pipeline
+                  splitjoin
+                    filter 57 CompareExchange
+                    filter 58 CompareExchange
+                  splitjoin
+                    pipeline
+                      splitjoin
+                        filter 59 CompareExchange
+                    pipeline
+                      splitjoin
+                        filter 60 CompareExchange
+                pipeline
+                  splitjoin
+                    filter 61 CompareExchange
+                    filter 62 CompareExchange
+                  splitjoin
+                    pipeline
+                      splitjoin
+                        filter 63 CompareExchange
+                    pipeline
+                      splitjoin
+                        filter 64 CompareExchange
+        pipeline
+          splitjoin
+            filter 65 CompareExchange
+            filter 66 CompareExchange
+            filter 67 CompareExchange
+            filter 68 CompareExchange
+            filter 69 CompareExchange
+            filter 70 CompareExchange
+            filter 71 CompareExchange
+            filter 72 CompareExchange
+          splitjoin
+            pipeline
+              splitjoin
+                filter 73 CompareExchange
+                filter 74 CompareExchange
+                filter 75 CompareExchange
+                filter 76 CompareExchange
+              splitjoin
+                pipeline
+                  splitjoin
+                    filter 77 CompareExchange
+                    filter 78 CompareExchange
+                  splitjoin
+                    pipeline
+                      splitjoin
+                        filter 79 CompareExchange
+                    pipeline
+                      splitjoin
+                        filter 80 CompareExchange
+                pipeline
+                  splitjoin
+                    filter 81 CompareExchange
+                    filter 82 CompareExchange
+                  splitjoin
+                    pipeline
+                      splitjoin
+                        filter 83 CompareExchange
+                    pipeline
+                      splitjoin
+                        filter 84 CompareExchange
+            pipeline
+              splitjoin
+                filter 85 CompareExchange
+                filter 86 CompareExchange
+                filter 87 CompareExchange
+                filter 88 CompareExchange
+              splitjoin
+                pipeline
+                  splitjoin
+                    filter 89 CompareExchange
+                    filter 90 CompareExchange
+                  splitjoin
+                    pipeline
+                      splitjoin
+                        filter 91 CompareExchange
+                    pipeline
+                      splitjoin
+                        filter 92 CompareExchange
+                pipeline
+                  splitjoin
+                    filter 93 CompareExchange
+                    filter 94 CompareExchange
+                  splitjoin
+                    pipeline
+                      splitjoin
+                        filter 95 CompareExchange
+                    pipeline
+                      splitjoin
+                        filter 96 CompareExchange
+      pipeline
+        splitjoin
+          pipeline
+            splitjoin
+              pipeline
+                splitjoin
+                  pipeline
+                    splitjoin
+                      pipeline
+                        filter 97 Identity
+                      pipeline
+                        filter 98 Identity
+                    pipeline
+                      splitjoin
+                        filter 99 CompareExchange
+                  pipeline
+                    splitjoin
+                      pipeline
+                        filter 100 Identity
+                      pipeline
+                        filter 101 Identity
+                    pipeline
+                      splitjoin
+                        filter 102 CompareExchange
+                pipeline
+                  splitjoin
+                    filter 103 CompareExchange
+                    filter 104 CompareExchange
+                  splitjoin
+                    pipeline
+                      splitjoin
+                        filter 105 CompareExchange
+                    pipeline
+                      splitjoin
+                        filter 106 CompareExchange
+              pipeline
+                splitjoin
+                  pipeline
+                    splitjoin
+                      pipeline
+                        filter 107 Identity
+                      pipeline
+                        filter 108 Identity
+                    pipeline
+                      splitjoin
+                        filter 109 CompareExchange
+                  pipeline
+                    splitjoin
+                      pipeline
+                        filter 110 Identity
+                      pipeline
+                        filter 111 Identity
+                    pipeline
+                      splitjoin
+                        filter 112 CompareExchange
+                pipeline
+                  splitjoin
+                    filter 113 CompareExchange
+                    filter 114 CompareExchange
+                  splitjoin
+                    pipeline
+                      splitjoin
+                        filter 115 CompareExchange
+                    pipeline
+                      splitjoin
+                        filter 116 CompareExchange
+            pipeline
+              splitjoin
+                filter 117 CompareExchange
+                filter 118 CompareExchange
+                filter 119 CompareExchange
+                filter 120 CompareExchange
+              splitjoin
+                pipeline
+                  splitjoin
+                    filter 121 CompareExchange
+                    filter 122 CompareExchange
+                  splitjoin
+                    pipeline
+                      splitjoin
+                        filter 123 CompareExchange
+                    pipeline
+                      splitjoin
+                        filter 124 CompareExchange
+                pipeline
+                  splitjoin
+                    filter 125 CompareExchange
+                    filter 126 CompareExchange
+                  splitjoin
+                    pipeline
+                      splitjoin
+                        filter 127 CompareExchange
+                    pipeline
+                      splitjoin
+                        filter 128 CompareExchange
+          pipeline
+            splitjoin
+              pipeline
+                splitjoin
+                  pipeline
+                    splitjoin
+                      pipeline
+                        filter 129 Identity
+                      pipeline
+                        filter 130 Identity
+                    pipeline
+                      splitjoin
+                        filter 131 CompareExchange
+                  pipeline
+                    splitjoin
+                      pipeline
+                        filter 132 Identity
+                      pipeline
+                        filter 133 Identity
+                    pipeline
+                      splitjoin
+                        filter 134 CompareExchange
+                pipeline
+                  splitjoin
+                    filter 135 CompareExchange
+                    filter 136 CompareExchange
+                  splitjoin
+                    pipeline
+                      splitjoin
+                        filter 137 CompareExchange
+                    pipeline
+                      splitjoin
+                        filter 138 CompareExchange
+              pipeline
+                splitjoin
+                  pipeline
+                    splitjoin
+                      pipeline
+                        filter 139 Identity
+                      pipeline
+                        filter 140 Identity
+                    pipeline
+                      splitjoin
+                        filter 141 CompareExchange
+                  pipeline
+                    splitjoin
+                      pipeline
+                        filter 142 Identity
+                      pipeline
+                        filter 143 Identity
+                    pipeline
+                      splitjoin
+                        filter 144 CompareExchange
+                pipeline
+                  splitjoin
+                    filter 145 CompareExchange
+                    filter 146 CompareExchange
+                  splitjoin
+                    pipeline
+                      splitjoin
+                        filter 147 CompareExchange
+                    pipeline
+                      splitjoin
+                        filter 148 CompareExchange
+            pipeline
+              splitjoin
+                filter 149 CompareExchange
+                filter 150 CompareExchange
+                filter 151 CompareExchange
+                filter 152 CompareExchange
+              splitjoin
+                pipeline
+                  splitjoin
+                    filter 153 CompareExchange
+                    filter 154 CompareExchange
+                  splitjoin
+                    pipeline
+                      splitjoin
+                        filter 155 CompareExchange
+                    pipeline
+                      splitjoin
+                        filter 156 CompareExchange
+                pipeline
+                  splitjoin
+                    filter 157 CompareExchange
+                    filter 158 CompareExchange
+                  splitjoin
+                    pipeline
+                      splitjoin
+                        filter 159 CompareExchange
+                    pipeline
+                      splitjoin
+                        filter 160 CompareExchange
+        pipeline
+          splitjoin
+            filter 161 CompareExchange
+            filter 162 CompareExchange
+            filter 163 CompareExchange
+            filter 164 CompareExchange
+            filter 165 CompareExchange
+            filter 166 CompareExchange
+            filter 167 CompareExchange
+            filter 168 CompareExchange
+          splitjoin
+            pipeline
+              splitjoin
+                filter 169 CompareExchange
+                filter 170 CompareExchange
+                filter 171 CompareExchange
+                filter 172 CompareExchange
+              splitjoin
+                pipeline
+                  splitjoin
+                    filter 173 CompareExchange
+                    filter 174 CompareExchange
+                  splitjoin
+                    pipeline
+                      splitjoin
+                        filter 175 CompareExchange
+                    pipeline
+                      splitjoin
+                        filter 176 CompareExchange
+                pipeline
+                  splitjoin
+                    filter 177 CompareExchange
+                    filter 178 CompareExchange
+                  splitjoin
+                    pipeline
+                      splitjoin
+                        filter 179 CompareExchange
+                    pipeline
+                      splitjoin
+                        filter 180 CompareExchange
+            pipeline
+              splitjoin
+                filter 181 CompareExchange
+                filter 182 CompareExchange
+                filter 183 CompareExchange
+                filter 184 CompareExchange
+              splitjoin
+                pipeline
+                  splitjoin
+                    filter 185 CompareExchange
+                    filter 186 CompareExchange
+                  splitjoin
+                    pipeline
+                      splitjoin
+                        filter 187 CompareExchange
+                    pipeline
+                      splitjoin
+                        filter 188 CompareExchange
+                pipeline
+                  splitjoin
+                    filter 189 CompareExchange
+                    filter 190 CompareExchange
+                  splitjoin
+                    pipeline
+                      splitjoin
+                        filter 191 CompareExchange
+                    pipeline
+                      splitjoin
+                        filter 192 CompareExchange
+    pipeline
+      splitjoin
+        filter 193 CompareExchange
+        filter 194 CompareExchange
+        filter 195 CompareExchange
+        filter 196 CompareExchange
+        filter 197 CompareExchange
+        filter 198 CompareExchange
+        filter 199 CompareExchange
+        filter 200 CompareExchange
+        filter 201 CompareExchange
+        filter 202 CompareExchange
+        filter 203 CompareExchange
+        filter 204 CompareExchange
+        filter 205 CompareExchange
+        filter 206 CompareExchange
+        filter 207 CompareExchange
+        filter 208 CompareExchange
+      splitjoin
+        pipeline
+          splitjoin
+            filter 209 CompareExchange
+            filter 210 CompareExchange
+            filter 211 CompareExchange
+            filter 212 CompareExchange
+            filter 213 CompareExchange
+            filter 214 CompareExchange
+            filter 215 CompareExchange
+            filter 216 CompareExchange
+          splitjoin
+            pipeline
+              splitjoin
+                filter 217 CompareExchange
+                filter 218 CompareExchange
+                filter 219 CompareExchange
+                filter 220 CompareExchange
+              splitjoin
+                pipeline
+                  splitjoin
+                    filter 221 CompareExchange
+                    filter 222 CompareExchange
+                  splitjoin
+                    pipeline
+                      splitjoin
+                        filter 223 CompareExchange
+                    pipeline
+                      splitjoin
+                        filter 224 CompareExchange
+                pipeline
+                  splitjoin
+                    filter 225 CompareExchange
+                    filter 226 CompareExchange
+                  splitjoin
+                    pipeline
+                      splitjoin
+                        filter 227 CompareExchange
+                    pipeline
+                      splitjoin
+                        filter 228 CompareExchange
+            pipeline
+              splitjoin
+                filter 229 CompareExchange
+                filter 230 CompareExchange
+                filter 231 CompareExchange
+                filter 232 CompareExchange
+              splitjoin
+                pipeline
+                  splitjoin
+                    filter 233 CompareExchange
+                    filter 234 CompareExchange
+                  splitjoin
+                    pipeline
+                      splitjoin
+                        filter 235 CompareExchange
+                    pipeline
+                      splitjoin
+                        filter 236 CompareExchange
+                pipeline
+                  splitjoin
+                    filter 237 CompareExchange
+                    filter 238 CompareExchange
+                  splitjoin
+                    pipeline
+                      splitjoin
+                        filter 239 CompareExchange
+                    pipeline
+                      splitjoin
+                        filter 240 CompareExchange
+        pipeline
+          splitjoin
+            filter 241 CompareExchange
+            filter 242 CompareExchange
+            filter 243 CompareExchange
+            filter 244 CompareExchange
+            filter 245 CompareExchange
+            filter 246 CompareExchange
+            filter 247 CompareExchange
+            filter 248 CompareExchange
+          splitjoin
+            pipeline
+              splitjoin
+                filter 249 CompareExchange
+                filter 250 CompareExchange
+                filter 251 CompareExchange
+                filter 252 CompareExchange
+              splitjoin
+                pipeline
+                  splitjoin
+                    filter 253 CompareExchange
+                    filter 254 CompareExchange
+                  splitjoin
+                    pipeline
+                      splitjoin
+                        filter 255 CompareExchange
+                    pipeline
+                      splitjoin
+                        filter 256 CompareExchange
+                pipeline
+                  splitjoin
+                    filter 257 CompareExchange
+                    filter 258 CompareExchange
+                  splitjoin
+                    pipeline
+                      splitjoin
+                        filter 259 CompareExchange
+                    pipeline
+                      splitjoin
+                        filter 260 CompareExchange
+            pipeline
+              splitjoin
+                filter 261 CompareExchange
+                filter 262 CompareExchange
+                filter 263 CompareExchange
+                filter 264 CompareExchange
+              splitjoin
+                pipeline
+                  splitjoin
+                    filter 265 CompareExchange
+                    filter 266 CompareExchange
+                  splitjoin
+                    pipeline
+                      splitjoin
+                        filter 267 CompareExchange
+                    pipeline
+                      splitjoin
+                        filter 268 CompareExchange
+                pipeline
+                  splitjoin
+                    filter 269 CompareExchange
+                    filter 270 CompareExchange
+                  splitjoin
+                    pipeline
+                      splitjoin
+                        filter 271 CompareExchange
+                    pipeline
+                      splitjoin
+                        filter 272 CompareExchange
+  filter 273 FileWriter
